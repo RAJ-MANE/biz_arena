@@ -78,6 +78,7 @@ export async function GET(req: NextRequest) {
         : 0;
 
       // Get peer ratings from Round 3 (3-10 range)
+      // Include ALL ratings (auto 6.5 ratings are neutral and should count)
       const peerData = await db
         .select({
           avgRating: sql<number>`COALESCE(AVG(CAST(${peerRatings.rating} AS DECIMAL)), 0)`,
@@ -90,9 +91,10 @@ export async function GET(req: NextRequest) {
       const peerCount = Number(peerData[0]?.peerCount) || 0;
       
       // Normalize peer rating from [3, 10] to [0, 1]
+      // If no ratings exist, use 0.5 (neutral fallback) instead of 0 to be fair
       const P_norm = peerCount > 0 
         ? Math.max(0, Math.min(1, (P_avg - 3) / 7)) 
-        : 0;
+        : 0.5;
 
       // Calculate final score
       const Final_score = w_J * J_norm + w_P * P_norm + w_A * A + w_Q * Q_index;

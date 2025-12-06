@@ -158,6 +158,7 @@ export const votes = pgTable('votes', {
   fromTeamId: integer('from_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
   toTeamId: integer('to_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
   value: integer('value').notNull(), // +1 or -1
+  isAutomatic: boolean('is_automatic').notNull().default(false), // True if auto-YES for skipped vote
   createdAt: timestamp('created_at', { withTimezone: false }).notNull().defaultNow()
 });
 
@@ -193,7 +194,8 @@ export const peerRatings = pgTable('peer_ratings', {
   id: serial('id').primaryKey(),
   fromTeamId: integer('from_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
   toTeamId: integer('to_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
-  rating: integer('rating').notNull(), // 3-10
+  rating: integer('rating').notNull(), // 3-10 (or 50 if automatic)
+  isAutomatic: boolean('is_automatic').notNull().default(false), // True if auto-50 for skipped rating
   createdAt: timestamp('created_at', { withTimezone: false }).notNull().defaultNow()
 });
 

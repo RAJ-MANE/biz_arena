@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { RulesDialog } from "@/components/ui/RulesDialog";
 import { UserPlus01, ArrowLeft, Clock, Zap, CheckCircle, AlertCircle, Eye, EyeOff } from "@untitled-ui/icons-react";
 
 export default function SignUpPage() {
@@ -21,6 +22,8 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showRulesDialog, setShowRulesDialog] = useState(false);
+  const [pendingSubmit, setPendingSubmit] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<{
     isOpen: boolean;
     deadline?: string;
@@ -110,6 +113,13 @@ export default function SignUpPage() {
       return;
     }
     
+    // Show rules dialog before submitting
+    setShowRulesDialog(true);
+    setPendingSubmit(true);
+  };
+
+  const handleRulesAccept = async () => {
+    setShowRulesDialog(false);
     setLoading(true);
     
     try {
@@ -140,7 +150,13 @@ export default function SignUpPage() {
       setError(err?.message || "Network error. Please try again.");
     } finally {
       setLoading(false);
+      setPendingSubmit(false);
     }
+  };
+
+  const handleRulesCancel = () => {
+    setShowRulesDialog(false);
+    setPendingSubmit(false);
   };
 
   const isFormValid = Object.values(formData).every(value => value.trim()) && 
@@ -149,6 +165,13 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 text-foreground overflow-x-hidden">
+      {/* Rules Dialog */}
+      <RulesDialog 
+        open={showRulesDialog}
+        onAccept={handleRulesAccept}
+        onCancel={handleRulesCancel}
+      />
+
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
