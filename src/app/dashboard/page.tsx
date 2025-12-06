@@ -15,7 +15,6 @@ import {
   Calendar, 
   RefreshCw, 
   Crown, 
-  Zap, 
   Target, 
   Brain, 
   Mic, 

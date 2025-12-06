@@ -194,8 +194,8 @@ export const peerRatings = pgTable('peer_ratings', {
   id: serial('id').primaryKey(),
   fromTeamId: integer('from_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
   toTeamId: integer('to_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
-  rating: integer('rating').notNull(), // 3-10 (or 50 if automatic)
-  isAutomatic: boolean('is_automatic').notNull().default(false), // True if auto-50 for skipped rating
+  rating: integer('rating').notNull(), // 3-10 range (6.5 stored as 65 if automatic)
+  isAutomatic: boolean('is_automatic').notNull().default(false), // True if auto-6.5 for skipped rating
   createdAt: timestamp('created_at', { withTimezone: false }).notNull().defaultNow()
 });
 

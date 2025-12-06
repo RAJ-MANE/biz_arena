@@ -550,7 +550,6 @@ export default function FinalPage() {
             <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
               Ranking Criteria: Final cumulative score (judge total + peer total + remaining token score) • Original votes received (net) as first tiebreaker • Total votes (including converted votes) as final tiebreaker
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Generated at: 9/26/2025, 4:19:41 PM</p>
           </div>
         </div>
         
@@ -951,10 +950,9 @@ export default function FinalPage() {
                 <p className={`text-base sm:text-lg mb-4 text-green-700 dark:text-green-300`}>
                   All teams are qualified for the finals. Please participate and rate other teams during the rating phases.
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-2 px-2">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-6 px-2">
                   Ranking Criteria: Final cumulative score (judge total + peer total + remaining token score) • Original votes received (net) as first tiebreaker • Total votes (including converted votes) as final tiebreaker
                 </p>
-                <p className="text-xs text-muted-foreground mb-6 px-2">Generated at: 9/26/2025, 4:19:41 PM</p>
                 <button
                   onClick={() => setShowQualificationPopup(false)}
                   className={`w-full px-4 py-2 sm:py-3 rounded-md font-medium text-white transition-colors text-sm sm:text-base ${

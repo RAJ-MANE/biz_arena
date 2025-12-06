@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { BackButton } from "@/components/BackButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -12,8 +14,7 @@ import {
   Trophy, 
   BarChart3, 
   Menu, 
-  X, 
-  Zap 
+  X
 } from "lucide-react";
 
 const NAV_LINKS = [
@@ -26,6 +27,9 @@ const NAV_LINKS = [
 export function DashboardNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
 
   if (isMobile) {
     return (
@@ -36,8 +40,8 @@ export function DashboardNavbar() {
             <div className="flex items-center gap-3">
               <BackButton />
               <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-white" />
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                  <Image src={logoSrc} alt="E-Summit Logo" width={48} height={48} className="object-contain" />
                 </div>
                 <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   BizArena
@@ -116,8 +120,8 @@ export function DashboardNavbar() {
           
           {/* Brand Logo */}
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Zap className="w-5 h-5 text-white" />
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+              <Image src={logoSrc} alt="E-Summit Logo" width={56} height={56} className="object-contain" />
             </div>
             <div className="text-left">
               <h1 className="font-bold text-lg bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">

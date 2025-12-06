@@ -114,7 +114,7 @@ export function RulesDialog({ open, onAccept, onCancel }: RulesDialogProps) {
               <ul className="space-y-1 text-muted-foreground">
                 <li>• <strong>Missed Quiz:</strong> Q_index = 0 (lose 5% + no Round 2 advantages)</li>
                 <li>• <strong>Skipped Vote:</strong> Automatic YES vote sent (with warning)</li>
-                <li>• <strong>Missed Peer Rating:</strong> Automatic score of 50 (with warning)</li>
+                <li>• <strong>Missed Peer Rating:</strong> Automatic rating of 6.5/10 (neutral midpoint)</li>
                 <li>• <strong>Exceeded 3 NO votes:</strong> Further NOs auto-convert to YES</li>
               </ul>
             </section>
@@ -136,7 +136,7 @@ export function RulesDialog({ open, onAccept, onCancel }: RulesDialogProps) {
               <h4 className="font-semibold mb-2">Winner Determination</h4>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• <strong>Primary:</strong> Highest final score wins</li>
-                <li>• <strong>Tiebreaker:</strong> Alphabetical order of team name</li>
+                <li>• <strong>Tiebreaker (6 levels):</strong> Judge → Peer → Approval → Quiz → Alphabetical</li>
               </ul>
             </section>
 

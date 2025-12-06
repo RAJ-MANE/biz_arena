@@ -6,11 +6,15 @@ import { useSession } from "@/lib/auth-client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Marquee } from "@/components/ui/marquee";
 import { RetroGrid } from "@/components/ui/retro-grid";
-import { Target01, Users01, UserPlus01, LogIn01, Award01, Settings01, Scale01, ArrowRight, Zap, Calendar, Trophy01, Lightbulb01, Microphone01 } from "@untitled-ui/icons-react";
+import { useTheme } from "next-themes";
+import { Target01, Users01, UserPlus01, LogIn01, Award01, Settings01, Scale01, ArrowRight, Calendar, Trophy01, Lightbulb01, Microphone01 } from "@untitled-ui/icons-react";
 
 export default function HomePage() {
   const { data: session, isPending } = useSession();
   const isSignedIn = !!session?.user;
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 text-foreground overflow-x-hidden">
@@ -25,8 +29,8 @@ export default function HomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
+              <Image src={logoSrc} alt="E-Summit Logo" width={40} height={40} className="object-contain" />
             </div>
             <div>
               <h1 className="font-bold text-lg bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
@@ -153,7 +157,7 @@ export default function HomePage() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full border border-primary/20 backdrop-blur-sm">
                 <Calendar className="w-5 h-5 text-primary" />
-                <span className="font-bold text-lg text-primary">DAY 1 - SEPTEMBER 25</span>
+                <span className="font-bold text-lg text-primary">DAY 1 - JANUARY 23, 2026</span>
               </div>
             </div>
             
@@ -221,7 +225,7 @@ export default function HomePage() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full border border-accent/20 backdrop-blur-sm">
                 <Calendar className="w-5 h-5 text-accent" />
-                <span className="font-bold text-lg text-accent">DAY 2 - SEPTEMBER 27</span>
+                <span className="font-bold text-lg text-accent">DAY 2 - JANUARY 24, 2026</span>
               </div>
             </div>
             

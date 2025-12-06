@@ -2,11 +2,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 // UI icons from @untitled-ui/icons-react
-import { Scale01, ArrowLeft, Eye, EyeOff, Zap, Scales01, AlertCircle } from "@untitled-ui/icons-react";
+import { Scale01, ArrowLeft, Eye, EyeOff, Scales01, AlertCircle } from "@untitled-ui/icons-react";
 
 export default function JudgeLogin() {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const currentTheme = resolvedTheme || 'light';
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -59,8 +64,8 @@ export default function JudgeLogin() {
           {/* Header */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                <Image src={logoSrc} alt="E-Summit Logo" width={64} height={64} className="object-contain" />
               </div>
               <div className="text-left">
                 <h1 className="font-bold text-xl bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">

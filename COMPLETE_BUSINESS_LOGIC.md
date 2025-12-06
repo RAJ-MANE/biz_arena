@@ -1,4 +1,4 @@
-# BizArena Competition - Complete Business Logic Flow
+﻿# BizArena Competition - Complete Business Logic Flow
 
 ## Table of Contents
 1. [Registration & Login](#registration--login)
@@ -8,24 +8,21 @@
 5. [Final Score Calculation](#final-score-calculation)
 6. [Winner Determination](#winner-determination)
 7. [Edge Cases & Auto-Handling](#edge-cases--auto-handling)
-
 ---
 
 ## Registration & Login
 
 ### Team Registration Flow
-
 **Step 1: Initial Sign-Up**
 - User navigates to `/sign-up`
 - Fills registration form:
-  - Username (unique)
-  - Full Name
-  - Team Name (unique across all teams)
-  - College Name
-  - Password (min 8 characters)
+- Username (unique)
+- Full Name
+- Team Name (unique across all teams)
+- College Name
+- Password (min 8 characters)
 - **IMPORTANT**: Only ONE team leader can register per team
 - Upon clicking "Sign Up", a **Rules Popup** appears with complete competition rules
-
 **Step 2: Rules Acknowledgment**
 - User must read and acknowledge the following rules before registration completes:
 
@@ -71,14 +68,14 @@ Display Score: Final × 100 (0-100 scale)
 
 WINNER DETERMINATION:
 - Highest final score wins
-- Tiebreaker chain: Judge score > Peer score > Approval > Quiz > Alphabetical
+- Cascading tiebreaker chain (6 levels): Final_score → J_norm → P_norm → A → Q_index → Alphabetical
 
 TEAM REGISTRATION RULES:
-✓ Only team leader can register
-✓ One registration per team (no duplicates)
-✓ All team members must be from same college
-✓ Team name must be unique
-✓ After registration, all team members can login with team credentials
+ Only team leader can register
+ One registration per team (no duplicates)
+ All team members must be from same college
+ Team name must be unique
+ After registration, all team members can login with team credentials
 
 PENALTIES & AUTO-HANDLING:
 - Missed Quiz: Q_index = 0 (0% contribution to final score)
@@ -99,48 +96,43 @@ By proceeding, you acknowledge:
 4. You accept automatic scoring for missed rounds
 5. All information provided is accurate
 ```
-
 **Step 3: Registration Completion**
 - After accepting rules, account is created
 - User receives JWT token
 - Redirected to `/dashboard`
 
 ### Login Flow
-
 **Team Members**
 ```
 POST /api/auth/login
 {
-  "username": "team_leader_username",
-  "password": "team_password"
+ "username": "team_leader_username",
+ "password": "team_password"
 }
 ```
 - All team members login with same credentials
 - Token issued with team information
 - Redirected based on current round status
-
 **Judges**
 ```
 POST /api/judge/login
 {
-  "username": "judge_username",
-  "password": "judge_password"
+ "username": "judge_username",
+ "password": "judge_password"
 }
 ```
 - Separate authentication for judges
 - Access to scoring interface only
-
 **Admins**
 ```
 POST /api/admin/login
 {
-  "username": "admin_username",
-  "password": "admin_password"
+ "username": "admin_username",
+ "password": "admin_password"
 }
 ```
 - Full system control
 - Can manage rounds, view all data, calculate scores
-
 ---
 
 ## Round 1: Quiz (Startup Mindset Profile)
@@ -155,31 +147,30 @@ POST /api/admin/login
 
 ```json
 {
-  "questionId": 1,
-  "text": "How do you approach risk in business?",
-  "options": [
-    {
-      "id": 1,
-      "text": "Avoid all risks",
-      "tokenDeltaCapital": -2,
-      "tokenDeltaMarketing": 0,
-      "tokenDeltaStrategy": -1,
-      "tokenDeltaTeam": 1
-    },
-    {
-      "id": 2,
-      "text": "Calculated risks only",
-      "tokenDeltaCapital": 3,
-      "tokenDeltaMarketing": 2,
-      "tokenDeltaStrategy": 4,
-      "tokenDeltaTeam": 3
-    }
-  ]
+ "questionId": 1,
+ "text": "How do you approach risk in business?",
+ "options": [
+ {
+ "id": 1,
+ "text": "Avoid all risks",
+ "tokenDeltaCapital": -2,
+ "tokenDeltaMarketing": 0,
+ "tokenDeltaStrategy": -1,
+ "tokenDeltaTeam": 1
+ },
+ {
+ "id": 2,
+ "text": "Calculated risks only",
+ "tokenDeltaCapital": 3,
+ "tokenDeltaMarketing": 2,
+ "tokenDeltaStrategy": 4,
+ "tokenDeltaTeam": 3
+ }
+ ]
 }
 ```
 
 ### Scoring Logic
-
 **Step 1: Raw Score Calculation**
 ```
 For each team t:
@@ -188,7 +179,6 @@ M_raw[t] = Σ (tokenDeltaMarketing for all 15 chosen options)
 S_raw[t] = Σ (tokenDeltaStrategy for all 15 chosen options)
 T_raw[t] = Σ (tokenDeltaTeam for all 15 chosen options)
 ```
-
 **Step 2: Clamp Negative Values**
 ```
 C[t] = max(0, C_raw[t])
@@ -196,7 +186,6 @@ M[t] = max(0, M_raw[t])
 S[t] = max(0, S_raw[t])
 T[t] = max(0, T_raw[t])
 ```
-
 **Step 3: Normalize Across Teams**
 ```
 C_max = max(C[t] for all teams) or 1 if all zero
@@ -204,12 +193,11 @@ M_max = max(M[t] for all teams) or 1 if all zero
 S_max = max(S[t] for all teams) or 1 if all zero
 T_max = max(T[t] for all teams) or 1 if all zero
 
-C_norm[t] = C[t] / C_max  ∈ [0,1]
-M_norm[t] = M[t] / M_max  ∈ [0,1]
-S_norm[t] = S[t] / S_max  ∈ [0,1]
-T_norm[t] = T[t] / T_max  ∈ [0,1]
+C_norm[t] = C[t] / C_max ∈ [0,1]
+M_norm[t] = M[t] / M_max ∈ [0,1]
+S_norm[t] = S[t] / S_max ∈ [0,1]
+T_norm[t] = T[t] / T_max ∈ [0,1]
 ```
-
 **Step 4: Calculate Quiz Influence Index**
 ```
 Q_index[t] = (C_norm[t] + M_norm[t] + S_norm[t] + T_norm[t]) / 4.0
@@ -221,35 +209,32 @@ POST /api/quiz/submit
 Authorization: Bearer <team_token>
 
 {
-  "teamId": 1,
-  "answers": [
-    { "questionId": 1, "optionId": 3 },
-    { "questionId": 2, "optionId": 7 },
-    ...15 total
-  ],
-  "durationSeconds": 1200
+ "teamId": 1,
+ "answers": [
+ { "questionId": 1, "optionId": 3 },
+ { "questionId": 2, "optionId": 7 },
+ ...15 total
+ ],
+ "durationSeconds": 1200
 }
 ```
-
 **Validation:**
-- ✓ Exactly 15 answers
-- ✓ All questionIds and optionIds valid
-- ✓ No duplicate questions
-- ✓ Duration ≤ 1800 seconds (30 minutes)
-- ✓ Quiz round is ACTIVE
-- ✓ Team hasn't already submitted
+- Exactly 15 answers
+- All questionIds and optionIds valid
+- No duplicate questions
+- Duration ≤ 1800 seconds (30 minutes)
+- Quiz round is ACTIVE
+- Team hasn't already submitted
 
 ### Admin Action After All Submissions
 ```http
 POST /api/quiz/calculate-normalized
 ```
 This calculates and stores normalized scores for all teams.
-
 **Output Stored:**
 - `capitalNorm`, `marketingNorm`, `strategyNorm`, `teamNorm`
 - `quizIndex` (Q_index)
 - Used later in Round 2 influence and final score
-
 ---
 
 ## Round 2: 90-Second Pitch + Voting
@@ -260,10 +245,8 @@ This calculates and stores normalized scores for all teams.
 - Order determined by admin
 
 ### Voting Rules
-
 **3-NO Vote Limit (Per Team)**
 Each team can cast maximum **3 NO votes** across ALL other teams.
-
 **Voter State Tracking:**
 ```
 Initialize per team:
@@ -272,14 +255,13 @@ no_votes_remaining = 3
 When team votes:
 - If vote = YES: Record YES (no limit)
 - If vote = NO:
-    - If no_votes_remaining > 0:
-        Record NO
-        no_votes_remaining -= 1
-    - If no_votes_remaining = 0:
-        Force to YES (automatic conversion)
-        Show warning: "NO votes exhausted - voting YES"
+- If no_votes_remaining > 0:
+ Record NO
+ no_votes_remaining -= 1
+- If no_votes_remaining = 0:
+ Force to YES (automatic conversion)
+ Show warning: "NO votes exhausted - voting YES"
 ```
-
 **Skipped Vote Handling:**
 If a team doesn't vote for another team within voting window:
 - **Automatic YES vote recorded**
@@ -291,68 +273,63 @@ POST /api/votes
 Authorization: Bearer <team_token>
 
 {
-  "fromTeamId": 1,
-  "toTeamId": 5,
-  "value": 1  // 1 = YES, -1 = NO
+ "fromTeamId": 1,
+ "toTeamId": 5,
+ "value": 1 // 1 = YES, -1 = NO
 }
 ```
-
 **Response:**
 ```json
 {
-  "success": true,
-  "message": "Vote recorded as YES",
-  "wasForced": false,  // true if NO was forced to YES
-  "noVotesRemaining": 2
+ "success": true,
+ "message": "Vote recorded as YES",
+ "wasForced": false, // true if NO was forced to YES
+ "noVotesRemaining": 2
 }
 ```
-
 **Check Voter Status:**
 ```http
 GET /api/votes?fromTeamId=1
 
 Response:
 {
-  "fromTeamId": 1,
-  "noVotesRemaining": 1,
-  "downvoteCount": 2,
-  "votedTeams": [2, 3, 5, 7, 9]
+ "fromTeamId": 1,
+ "noVotesRemaining": 1,
+ "downvoteCount": 2,
+ "votedTeams": [2, 3, 5, 7, 9]
 }
 ```
 
 ### Approval Rate Calculation
-
 **After All Votes Cast - Admin Action:**
 ```http
 POST /api/voting/calculate-approval-rates
 ```
-
 **Logic:**
 ```
 Hyperparameters:
-ALPHA = 0.10  // Marketing influence on YES votes
-BETA = 0.10   // Capital influence on NO votes
+ALPHA = 0.10 // Marketing influence on YES votes
+BETA = 0.10 // Capital influence on NO votes
 
 For each team t:
 1. Tally raw votes:
-   Y_raw[t] = count of YES votes received
-   N_raw[t] = count of NO votes received
+ Y_raw[t] = count of YES votes received
+ N_raw[t] = count of NO votes received
 
 2. Get quiz influence:
-   M_norm[t] = Marketing normalized score (from Round 1)
-   C_norm[t] = Capital normalized score (from Round 1)
+ M_norm[t] = Marketing normalized score (from Round 1)
+ C_norm[t] = Capital normalized score (from Round 1)
 
 3. Apply quiz influence:
-   Y_eff[t] = Y_raw[t] × (1 + ALPHA × M_norm[t])
-   N_eff[t] = max(0, N_raw[t] × (1 - BETA × C_norm[t]))
+ Y_eff[t] = Y_raw[t] × (1 + ALPHA × M_norm[t])
+ N_eff[t] = max(0, N_raw[t] × (1 - BETA × C_norm[t]))
 
 4. Calculate approval rate:
-   If (Y_eff[t] + N_eff[t]) > 0:
-       A[t] = Y_eff[t] / (Y_eff[t] + N_eff[t])
-   Else:
-       A[t] = 0.5  // Neutral if no votes
+ If (Y_eff[t] + N_eff[t]) > 0:
+ A[t] = Y_eff[t] / (Y_eff[t] + N_eff[t])
+ Else:
+ A[t] = 0.5 // Neutral if no votes
 ```
-
 **Example:**
 ```
 Team Alpha:
@@ -374,7 +351,6 @@ Approval Rate: 82.64%
 - `yesRaw`, `noRaw`: Raw vote counts
 - `yesEffective`, `noEffective`: Influenced vote values
 - `approvalRate`: A[t] value used in final score
-
 ---
 
 ## Round 3: 2-Minute Pitch + Ratings
@@ -385,56 +361,49 @@ Approval Rate: 82.64%
 - Order determined by admin
 
 ### Judge Scoring
-
 **Requirements:**
 - Score range: **30 to 100** (inclusive)
-- Each judge scores each team independently
-- Scores cannot be changed after submission
-
+- Each judge can submit a score for each team once; further attempts return the existing score and do not change it
+- Score submission is idempotent (resubmissions return existing score with 200 status)
 **API:**
 ```http
 POST /api/judges/scores
 Authorization: Bearer <judge_token>
 
 {
-  "judgeName": "Judge Smith",
-  "teamId": 1,
-  "score": 85
+ "judgeName": "Judge Smith",
+ "teamId": 1,
+ "score": 85
 }
 ```
-
 **Validation:**
-- ✓ Score is integer
-- ✓ 30 ≤ score ≤ 100
-- ✓ Judge hasn't already scored this team
-- ✓ Rating round is ACTIVE
+- Score is integer
+- 30 ≤ score ≤ 100
+- Judge can re-score same team (idempotent: returns existing score)
+- Rating round is ACTIVE
 
 ### Peer Ratings
-
 **Requirements:**
 - Rating range: **3 to 10** (inclusive)
 - Each team rates all other teams (cannot rate self)
 - Ratings cannot be changed after submission
-
 **API:**
 ```http
 POST /api/final/ratings
 Authorization: Bearer <team_token>
 
 {
-  "fromTeamId": 1,
-  "toTeamId": 5,
-  "rating": 8
+ "fromTeamId": 1,
+ "toTeamId": 5,
+ "rating": 8
 }
 ```
-
 **Validation:**
-- ✓ Rating is integer
-- ✓ 3 ≤ rating ≤ 10
-- ✓ Cannot rate own team
-- ✓ Team hasn't already rated this target team
-- ✓ Rating round is ACTIVE
-
+- Rating is integer
+- 3 ≤ rating ≤ 10
+- Cannot rate own team
+- Team hasn't already rated this target team
+- Rating round is ACTIVE
 **Skipped Peer Rating Handling:**
 If a team doesn't rate another team within rating window:
 - **Automatic rating of 6.5/10 awarded (neutral midpoint)**
@@ -442,7 +411,6 @@ If a team doesn't rate another team within rating window:
 - Note: 6.5 is the exact midpoint of the 3-10 scale and is included in P_avg calculation
 
 ### Score Normalization
-
 **Judge Scores (30-100 → 0-1):**
 ```
 For each team t:
@@ -453,7 +421,6 @@ J_norm[t] = (J_avg[t] - 30) / 70
 Clamp to [0,1]:
 J_norm[t] = max(0, min(1, J_norm[t]))
 ```
-
 **Peer Ratings (3-10 → 0-1):**
 ```
 For each team t:
@@ -468,7 +435,6 @@ Special case - No ratings at all:
 If team received NO peer ratings (no teams rated them),
 P_norm = 0.5 (neutral fallback for fairness)
 ```
-
 ---
 
 ## Final Score Calculation
@@ -478,10 +444,10 @@ P_norm = 0.5 (neutral fallback for fairness)
 Final_score[t] = w_J × J_norm[t] + w_P × P_norm[t] + w_A × A[t] + w_Q × Q_index[t]
 
 Where:
-w_J = 0.55  (55% weight for judges)
-w_P = 0.25  (25% weight for peers)
-w_A = 0.15  (15% weight for approval rate)
-w_Q = 0.05  (5% weight for quiz)
+w_J = 0.55 (55% weight for judges)
+w_P = 0.25 (25% weight for peers)
+w_A = 0.15 (15% weight for approval rate)
+w_Q = 0.05 (5% weight for quiz)
 
 Sum of weights = 1.00 (100%)
 ```
@@ -499,30 +465,30 @@ GET /api/final/calculate-scores
 
 Response:
 {
-  "scoreboard": [
-    {
-      "rank": 1,
-      "teamId": 1,
-      "teamName": "Team Alpha",
-      "college": "MIT",
-      "scores": {
-        "quizIndex": 0.8639,      // Q_index
-        "approvalRate": 0.8279,    // A
-        "judgeNorm": 0.7857,       // J_norm
-        "peerNorm": 0.7143         // P_norm
-      },
-      "rawData": {
-        "judgeAvg": 85.00,
-        "judgeCount": 5,
-        "peerAvg": 8.00,
-        "peerCount": 11
-      },
-      "finalScore": 0.779518,     // Weighted sum
-      "finalDisplay": 77.95       // Final × 100
-    }
-  ],
-  "weights": { "w_J": 0.55, "w_P": 0.25, "w_A": 0.15, "w_Q": 0.05 },
-  "explanation": {...}
+ "scoreboard": [
+ {
+ "rank": 1,
+ "teamId": 1,
+ "teamName": "Team Alpha",
+ "college": "MIT",
+ "scores": {
+ "quizIndex": 0.8639, // Q_index
+ "approvalRate": 0.8279, // A
+ "judgeNorm": 0.7857, // J_norm
+ "peerNorm": 0.7143 // P_norm
+ },
+ "rawData": {
+ "judgeAvg": 85.00,
+ "judgeCount": 5,
+ "peerAvg": 8.00,
+ "peerCount": 11
+ },
+ "finalScore": 0.779518, // Weighted sum
+ "finalDisplay": 77.95 // Final × 100
+ }
+ ],
+ "weights": { "w_J": 0.55, "w_P": 0.25, "w_A": 0.15, "w_Q": 0.05 },
+ "explanation": {...}
 }
 ```
 
@@ -535,12 +501,11 @@ Team Alpha:
 - P_avg = 8.00 → P_norm = (8-3)/7 = 0.7143
 
 Final_score = 0.55(0.7857) + 0.25(0.7143) + 0.15(0.8279) + 0.05(0.8639)
-            = 0.4321 + 0.1786 + 0.1242 + 0.0432
-            = 0.7781
+ = 0.4321 + 0.1786 + 0.1242 + 0.0432
+ = 0.7781
 
 Final_display = 0.7781 × 100 = 77.81 points
 ```
-
 ---
 
 ## Winner Determination
@@ -555,19 +520,33 @@ Rank 2: Team with second highest Final_score
 ...
 ```
 
-### Tiebreaker
-If two or more teams have identical `Final_score`:
-**Alphabetical Order of Team Name**
+### Cascading Tiebreaker (6 Levels)
+If two or more teams have identical `Final_score`, apply the following tiebreaker chain:
+
+1. **Final_score** (primary ranking)
+2. **J_norm** (Judge score component)
+3. **P_norm** (Peer rating component)
+4. **A** (Approval rate)
+5. **Q_index** (Quiz index)
+6. **Alphabetical order** of team name (last resort)
 
 ```
 Example:
-- Team Alpha: 87.50
-- Team Beta: 87.50
-- Team Gamma: 87.50
+Team Alpha: Final=87.50, J_norm=0.85, P_norm=0.78, A=0.80, Q_index=0.75
+Team Beta: Final=87.50, J_norm=0.85, P_norm=0.78, A=0.82, Q_index=0.70
+Team Gamma: Final=87.50, J_norm=0.85, P_norm=0.78, A=0.80, Q_index=0.75
 
-Winner: Team Alpha (comes first alphabetically)
-Second: Team Beta
-Third: Team Gamma
+Step 1: Final_score tied (87.50) → proceed to J_norm
+Step 2: J_norm tied (0.85) → proceed to P_norm 
+Step 3: P_norm tied (0.78) → proceed to A
+Step 4: Beta wins with A=0.82 (Alpha and Gamma have 0.80)
+Step 5: Between Alpha and Gamma (both A=0.80) → proceed to Q_index
+Step 6: Both have Q_index=0.75 → Alphabetical: Alpha > Gamma
+
+Final Ranking:
+1st: Team Beta (higher approval rate)
+2nd: Team Alpha (alphabetically before Gamma)
+3rd: Team Gamma
 ```
 
 ### Scoreboard API
@@ -576,37 +555,35 @@ GET /api/scoreboard
 
 Response:
 {
-  "leaderboard": [
-    {
-      "rank": 1,
-      "teamName": "Team Alpha",
-      "finalDisplay": 87.50,
-      ...
-    }
-  ],
-  "winnerNotes": [
-    {
-      "position": 1,
-      "type": "tiebreaker",
-      "message": "Tiebreaker applied for 1st place: Team Alpha placed above Team Beta, Team Gamma due to alphabetical order of team name.",
-      "tiedScore": 0.8750,
-      "tiedTeams": [
-        {"name": "Team Alpha", "rank": 1},
-        {"name": "Team Beta", "rank": 2},
-        {"name": "Team Gamma", "rank": 3}
-      ]
-    }
-  ]
+ "leaderboard": [
+ {
+ "rank": 1,
+ "teamName": "Team Alpha",
+ "finalDisplay": 87.50,
+ ...
+ }
+ ],
+ "winnerNotes": [
+ {
+ "position": 1,
+ "type": "tiebreaker",
+ "message": "Tiebreaker applied for 1st place: Team Alpha placed above Team Beta, Team Gamma due to alphabetical order of team name.",
+ "tiedScore": 0.8750,
+ "tiedTeams": [
+ {"name": "Team Alpha", "rank": 1},
+ {"name": "Team Beta", "rank": 2},
+ {"name": "Team Gamma", "rank": 3}
+ ]
+ }
+ ]
 }
 ```
-
 ---
 
 ## Edge Cases & Auto-Handling
 
 ### 1. Team Misses Quiz (Round 1)
 **Scenario:** Team doesn't submit quiz within 30-minute window
-
 **Automatic Action:**
 ```
 Q_index[t] = 0
@@ -615,92 +592,83 @@ M_norm[t] = 0
 S_norm[t] = 0
 T_norm[t] = 0
 ```
-
 **Impact on Final Score:**
 - Quiz contribution: 0.05 × 0 = 0 points (loses 5% of final score)
 - No influence on Round 2 voting (no Marketing boost, no Capital NO reduction)
-
 **Warning Displayed:**
 "Your team did not complete the quiz. Quiz score set to 0. This affects 5% of your final score and removes voting advantages in Round 2."
 
 ### 2. Team Skips Vote in Round 2
 **Scenario:** Team doesn't cast vote for another team during voting window
-
 **Automatic Action:**
 ```
 For each unvoted team:
-  record_vote(fromTeamId, toTeamId, value=1)  // YES vote
-  
+ record_vote(fromTeamId, toTeamId, value=1) // YES vote
+ 
 Warning notification:
-  "You missed voting for [Team Name]. An automatic YES vote has been cast."
+ "You missed voting for [Team Name]. An automatic YES vote has been cast."
 ```
-
 **Implementation:**
 - Backend tracks which teams each voter hasn't voted for
 - When voting window closes (admin stops voting phase):
-  ```http
-  POST /api/voting/auto-complete
-  {
-    "teamId": 1  // Process missing votes for this team
-  }
-  ```
+ ```http
+ POST /api/voting/auto-complete
+ {
+ "teamId": 1 // Process missing votes for this team
+ }
+ ```
 - System automatically inserts YES votes for all unvoted teams
 - Warnings logged and displayed on dashboard
-
 **Impact:**
 - No penalty to team that skipped (YES is positive)
 - Receiving team gets extra YES vote (slight advantage)
 
 ### 3. Team Misses Peer Rating in Round 3
 **Scenario:** Team doesn't rate another team during rating window
-
 **Automatic Action:**
 ```
 For each unrated team:
-  record_rating(fromTeamId, toTeamId, rating=50, isAutomatic=true)
-  
+ record_rating(fromTeamId, toTeamId, rating=6.5, isAutomatic=true)
+ 
 Warning notification:
-  "You missed rating [Team Name]. An automatic neutral score of 50 has been assigned."
+ "You missed rating [Team Name]. An automatic neutral score of 6.5/10 has been assigned."
 ```
-
 **Special Handling:**
-- 50 is NOT in normal peer rating range (3-10)
-- Stored in separate `autoPeerRatings` table or flagged
-- NOT included in P_avg calculation
-- Treated as "neutral/no impact" on receiving team's score
-
+- 6.5 is the midpoint of normal peer rating range (3-10)
+- Stored in `peerRatings` table with `isAutomatic=true` flag
+- INCLUDED in P_avg calculation (treated as neutral rating)
+- Represents "no opinion" score - neither positive nor negative
 **Implementation:**
 ```http
 POST /api/rating/auto-complete
 {
-  "teamId": 1  // Process missing ratings for this team
+ "teamId": 1 // Process missing ratings for this team
 }
 ```
-
 **Impact on Receiving Team:**
-- Auto-6.5 ratings are INCLUDED in P_avg calculation (neutral contribution)
-- All ratings (manual 3-10 and auto 6.5) count toward peer score
-- If team receives NO peer ratings at all, P_norm = 0.5 (neutral fallback)
+- **6.5 is the midpoint** of 3-10 peer rating scale (neutral score)
+- **ALWAYS INCLUDED** in P_avg calculation (treated as regular rating)
+- **P_norm Fallback**: If team receives NO peer ratings at all (all auto or none), P_norm = 0.5 instead of 0
+- Auto-ratings stored with `isAutomatic=true` flag in peerRatings table
+- All ratings (manual 3-10 and auto 6.5) contribute equally to peer score calculation
 
 ### 4. Team Uses All 3 NO Votes
 **Scenario:** Team has cast 3 NO votes, attempts to vote NO again
-
 **Automatic Action:**
 ```
 voterState.noVotesRemaining = 0
 
 On vote attempt with value = -1:
-  actualValue = 1  // Force to YES
-  
+ actualValue = 1 // Force to YES
+ 
 Response:
 {
-  "success": true,
-  "message": "NO votes exhausted - vote recorded as YES",
-  "wasForced": true,
-  "noVotesRemaining": 0
+ "success": true,
+ "message": "NO votes exhausted - vote recorded as YES",
+ "wasForced": true,
+ "noVotesRemaining": 0
 }
 ```
-
 **UI Handling:**
 - NO button should be disabled when noVotesRemaining = 0
 - Display warning: "You have used all 3 NO votes. Only YES votes available."
@@ -708,100 +676,102 @@ Response:
 
 ### 5. Judge/Peer Score Out of Range
 **Scenario:** Score submitted outside valid range
-
 **Validation:**
 ```
 Judge score: if (score < 30 || score > 100)
-  return error: "Judge score must be between 30-100"
+ return error: "Judge score must be between 30-100"
 
 Peer rating: if (rating < 3 || rating > 10)
-  return error: "Peer rating must be between 3-10"
+ return error: "Peer rating must be between 3-10"
 ```
-
 **No automatic correction** - user must resubmit within valid range
 
 ### 6. Duplicate Submission Attempts
-**Scenarios:**
-- Team tries to submit quiz twice
-- Judge tries to score same team twice
-- Team tries to vote for same team twice
-- Team tries to rate same team twice
-
+**Scenarios & Behaviors:**
+- **Quiz submission**: Returns 409 error "Quiz already submitted" (first submission is final)
+- **Judge scores**: Returns 200 with existing score (idempotent behavior)
+- **Votes**: Returns 200 with existing vote (idempotent behavior)
+- **Peer ratings**: Returns 200 with existing rating (idempotent behavior)
 **Action:**
 ```
 Check database for existing record:
-  
-If exists:
-  return error: "You have already [submitted/scored/voted/rated] for this team"
-  status: 409 Conflict
-```
 
-**No overwrite** - first submission is final
+Quiz (409 - First submission final):
+if (existingSubmission):
+ return error: "Quiz already submitted for this team" (409)
+ // Quiz is NOT idempotent - first submission is locked
+
+Votes/Ratings/Judge Scores (200 - Idempotent):
+if (alreadyVoted/Rated/Scored):
+ return { success: true, [record]: existing, isExisting: true } (200)
+ // These ARE idempotent - return existing record without error
+```
+**Why Different Behaviors?**
+- **Quiz**: Educational integrity - prevent answer changing after seeing results
+- **Votes/Ratings/Judge Scores**: User experience - accidental resubmits shouldn't error
+**Frontend Handling:**
+- Disable submit button after first submission
+- Store submission state in localStorage
+- Display "Already submitted" message for appropriate feedback
+- Quiz: Show error on resubmit; Votes/Ratings: Silent success
+**No overwrite** - first submission is final for all types
 
 ### 7. Self-Voting/Rating
 **Scenario:** Team tries to vote/rate for themselves
-
 **Validation:**
 ```
 if (fromTeamId === toTeamId)
-  return error: "Cannot vote/rate for your own team"
-  status: 400 Bad Request
+ return error: "Cannot vote/rate for your own team"
+ status: 400 Bad Request
 ```
-
 **Frontend Prevention:**
 - Own team excluded from voting/rating lists
 - Backend validation as safety check
 
 ### 8. Admin Calculation Timing
 **Scenario:** Admin calculates scores before all data collected
-
 **Validation:**
 ```
 POST /api/quiz/calculate-normalized
-  Check: All teams have submitted quiz
-  If not: Warning but proceed (missing teams get Q_index=0)
+ Check: All teams have submitted quiz
+ If not: Warning but proceed (missing teams get Q_index=0)
 
 POST /api/voting/calculate-approval-rates
-  Check: Voting phase completed
-  Auto-complete any missing votes first
-  Then calculate approval rates
+ Check: Voting phase completed
+ Auto-complete any missing votes first
+ Then calculate approval rates
 
 GET /api/final/calculate-scores
-  Check: Round 3 completed
-  Auto-complete any missing ratings first
-  Then calculate final scores
+ Check: Round 3 completed
+ Auto-complete any missing ratings first
+ Then calculate final scores
 ```
 
 ### 9. Network Failure During Submission
 **Scenario:** User's network drops during quiz/vote/rating submission
-
 **Handling:**
 - Frontend: Retry logic with exponential backoff
 - Backend: Idempotent endpoints (duplicate request = same result)
 - Database: Transaction-wrapped inserts prevent partial data
-
 **Recovery:**
 ```
 Frontend checks:
 GET /api/quiz/submit?teamId=1
-  → Returns existing submission if already submitted
-  → User can verify without resubmitting
+ → Returns existing submission if already submitted
+ → User can verify without resubmitting
 ```
 
 ### 10. Time Limit Exceeded
 **Scenario:** Team submits quiz after 30 minutes
-
 **Validation:**
 ```
 if (durationSeconds > 1800)
-  return error: "Quiz submission exceeded 30-minute time limit"
-  status: 400 Bad Request
+ return error: "Quiz submission exceeded 30-minute time limit"
+ status: 400 Bad Request
 ```
-
 **Consequence:**
 - Submission rejected
 - Team treated as "didn't submit" (Q_index = 0)
-
 ---
 
 ## System State Management
@@ -838,17 +808,16 @@ Events Pushed:
 ### Data Persistence
 ```
 After Each Action:
-✓ Quiz submission → quizSubmissions table
-✓ Vote cast → votes table + voterState table
-✓ Rating submitted → peerRatings table
-✓ Judge score → judgeScores table
+ Quiz submission → quizSubmissions table
+ Vote cast → votes table + voterState table
+ Rating submitted → peerRatings table
+ Judge score → judgeScores table
 
 After Admin Calculations:
-✓ Normalized quiz scores → quizSubmissions (updated)
-✓ Approval rates → teamApprovalRates table
-✓ Final scores → Calculated on-demand (not stored)
+ Normalized quiz scores → quizSubmissions (updated)
+ Approval rates → teamApprovalRates table
+ Final scores → Calculated on-demand (not stored)
 ```
-
 ---
 
 ## Security & Validation
@@ -897,23 +866,23 @@ Admins can:
 ### Input Validation
 ```
 Every API endpoint validates:
-✓ Required fields present
-✓ Data types correct
-✓ Value ranges valid
-✓ Foreign keys exist
-✓ Business rules enforced
+ Required fields present
+ Data types correct
+ Value ranges valid
+ Foreign keys exist
+ Business rules enforced
 
 Example - Quiz Submission:
-✓ teamId exists in teams table
-✓ answers is array of length 15
-✓ Each answer has questionId and optionId
-✓ All questionIds are unique
-✓ All questionIds exist in questions table
-✓ All optionIds exist in options table
-✓ Each optionId belongs to its questionId
-✓ durationSeconds ≤ 1800
-✓ Round status is ACTIVE
-✓ Team hasn't already submitted
+ teamId exists in teams table
+ answers is array of length 15
+ Each answer has questionId and optionId
+ All questionIds are unique
+ All questionIds exist in questions table
+ All optionIds exist in options table
+ Each optionId belongs to its questionId
+ durationSeconds ≤ 1800
+ Round status is ACTIVE
+ Team hasn't already submitted
 ```
 
 ### Database Constraints
@@ -933,7 +902,6 @@ Foreign Keys:
 - All teamId references → teams.id (CASCADE delete)
 - All userId references → user.id (CASCADE delete)
 ```
-
 ---
 
 ## Admin Workflow Summary
@@ -954,9 +922,9 @@ Foreign Keys:
 1. Activate Voting round: `PATCH /api/rounds/{votingId} { status: "ACTIVE" }`
 2. Start voting cycle: `POST /api/admin/voting/start-cycle`
 3. For each team:
-   - Present 90-second pitch
-   - Open voting window (other teams vote)
-   - Close voting window
+- Present 90-second pitch
+- Open voting window (other teams vote)
+- Close voting window
 4. Auto-complete missed votes: `POST /api/voting/auto-complete`
 5. End Voting round: `PATCH /api/rounds/{votingId} { status: "COMPLETED" }`
 6. Calculate approval rates: `POST /api/voting/calculate-approval-rates`
@@ -965,9 +933,9 @@ Foreign Keys:
 1. Activate Final round: `PATCH /api/rounds/{finalId} { status: "ACTIVE" }`
 2. Start rating cycle: `POST /api/admin/rating/start-cycle`
 3. For each team:
-   - Present 2-minute pitch
-   - Open rating window (judges score, peers rate)
-   - Close rating window
+- Present 2-minute pitch
+- Open rating window (judges score, peers rate)
+- Close rating window
 4. Auto-complete missed ratings: `POST /api/rating/auto-complete`
 5. End Final round: `PATCH /api/rounds/{finalId} { status: "COMPLETED" }`
 
@@ -976,7 +944,6 @@ Foreign Keys:
 2. View scoreboard: `GET /api/scoreboard`
 3. Export results: `GET /api/admin/export`
 4. Announce winners
-
 ---
 
 ## Verification Checklist
@@ -1004,64 +971,63 @@ Foreign Keys:
 
 ### After Round 3
 - [ ] All judge scores within 30-100 range
-- [ ] All peer ratings within 3-10 range (or auto-50)
-- [ ] Skipped peer ratings auto-filled with 50
-- [ ] J_norm and P_norm calculated correctly
+- [ ] All peer ratings within 3-10 range (including auto-6.5)
+- [ ] Skipped peer ratings auto-filled with 6.5 (neutral midpoint)
+- [ ] J_norm and P_norm calculated correctly (includes auto-6.5 ratings)
 
 ### Final Score
 - [ ] Weights sum to 1.00 (55% + 25% + 15% + 5%)
 - [ ] All scores normalized to [0,1] before weighting
+- [ ] P_norm defaults to 0.5 when no peer ratings exist (fairness)
 - [ ] Final_display on [0,100] scale
-- [ ] Tiebreaker (alphabetical) applied correctly
+- [ ] Cascading tiebreaker applied correctly (Final → Judge → Peer → Approval → Quiz → Alphabetical)
 - [ ] Scoreboard shows complete breakdown
-
 ---
 
 ## Error Messages & User Feedback
 
 ### Registration
 ```
-✓ Success: "Registration successful! Please read the competition rules carefully."
-✗ Team name taken: "This team name is already registered."
-✗ Username taken: "This username is already taken."
-✗ Password weak: "Password must be at least 8 characters."
+ Success: "Registration successful! Please read the competition rules carefully."
+ Team name taken: "This team name is already registered."
+ Username taken: "This username is already taken."
+ Password weak: "Password must be at least 8 characters."
 ```
 
 ### Quiz
 ```
-✓ Success: "Quiz submitted successfully! Your scores will be calculated after all teams complete."
-✗ Time exceeded: "Quiz submission exceeded 30-minute time limit."
-✗ Already submitted: "Your team has already submitted the quiz."
-✗ Round not active: "Quiz round is not currently active."
+ Success: "Quiz submitted successfully! Your scores will be calculated after all teams complete."
+ Time exceeded: "Quiz submission exceeded 30-minute time limit."
+ Already submitted: "Your team has already submitted the quiz."
+ Round not active: "Quiz round is not currently active."
 ```
 
 ### Voting
 ```
-✓ Success (YES): "Vote recorded as YES."
-✓ Success (NO): "Vote recorded as NO. You have X NO votes remaining."
-⚠ Forced YES: "NO votes exhausted - vote recorded as YES."
-⚠ Auto YES: "You missed voting for [Team]. An automatic YES vote has been cast."
-✗ Already voted: "You have already voted for this team."
-✗ Self-vote: "Cannot vote for your own team."
+ Success (YES): "Vote recorded as YES."
+ Success (NO): "Vote recorded as NO. You have X NO votes remaining."
+ Forced YES: "NO votes exhausted - vote recorded as YES."
+ Auto YES: "You missed voting for [Team]. An automatic YES vote has been cast."
+ Already voted: "You have already voted for this team."
+ Self-vote: "Cannot vote for your own team."
 ```
 
 ### Rating
 ```
-✓ Success: "Rating submitted successfully for [Team]."
-⚠ Auto-50: "You missed rating [Team]. An automatic neutral score of 50 has been assigned."
-✗ Already rated: "You have already rated this team."
-✗ Self-rate: "Cannot rate your own team."
-✗ Out of range: "Peer rating must be between 3-10."
+ Success: "Rating submitted successfully for [Team]."
+ Auto-6.5: "You missed rating [Team]. An automatic neutral score of 6.5/10 has been assigned."
+ Already rated: "You have already rated this team."
+ Self-rate: "Cannot rate your own team."
+ Out of range: "Peer rating must be between 3-10."
 ```
 
 ### Judge Scoring
 ```
-✓ Success: "Score submitted successfully for [Team]."
-✗ Already scored: "You have already scored this team."
-✗ Out of range: "Judge score must be between 30-100."
-✗ Round not active: "Rating round is not currently active."
+ Success: "Score submitted successfully for [Team]."
+ Existing score returned: Returns existing score with 200 status (idempotent)
+ Out of range: "Judge score must be between 30-100."
+ Round not active: "Rating round is not currently active."
 ```
-
 ---
 
 ## Summary of Key Numbers
@@ -1101,19 +1067,18 @@ PENALTIES:
 - Missed Peer Rating: Auto 6.5/10 (neutral, included in average)
 - No peer ratings at all: P_norm = 0.5 (neutral fallback for fairness)
 ```
-
 ---
 
 ## Conclusion
 
 This business logic ensures:
-✓ Fair scoring across all teams
-✓ Automatic handling of missed submissions
-✓ Clear penalties for non-participation
-✓ Quiz influence on voting outcomes
-✓ Balanced weight distribution (judges > peers > approval > quiz)
-✓ Deterministic tiebreaking
-✓ Complete audit trail
-✓ Real-time competition management
+ Fair scoring across all teams
+ Automatic handling of missed submissions
+ Clear penalties for non-participation
+ Quiz influence on voting outcomes
+ Balanced weight distribution (judges > peers > approval > quiz)
+ Deterministic tiebreaking
+ Complete audit trail
+ Real-time competition management
 
 All edge cases are handled gracefully with appropriate warnings and automatic neutral scores.

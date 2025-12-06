@@ -199,7 +199,7 @@ export async function GET(request: NextRequest) {
         formula: 'Final = 55% Judges + 25% Peers + 15% Approval + 5% Quiz',
         rankingCriteria: [
           'Final weighted score (0-100 scale)',
-          'Team name alphabetical order as tiebreaker'
+          'Cascading tiebreaker: Final → Judge → Peer → Approval → Quiz → Alphabetical'
         ],
         participation: {
           quizSubmissions: totalQuizSubmissions,
@@ -207,12 +207,14 @@ export async function GET(request: NextRequest) {
           judgeScores: totalJudgeScores,
         },
         explanation: {
-          finalScore: 'Weighted combination of all rounds: 55% judge scores (30-100 normalized), 25% peer ratings (3-10 normalized), 15% approval rate from voting, 5% quiz influence index',
+          finalScore: 'Weighted combination of all rounds: 55% judge scores (30-100 normalized), 25% peer ratings (3-10 normalized with 6.5 auto-rating for missing submissions), 15% approval rate from voting, 5% quiz influence index',
           judgeScores: 'Average of all judge scores (30-100 range), normalized to [0,1]',
-          peerRatings: 'Average of all peer ratings (3-10 range), normalized to [0,1]',
+          peerRatings: 'Average of all peer ratings (3-10 range), normalized to [0,1], includes auto-6.5 for missing ratings',
           approvalRate: 'YES votes influenced by Marketing, NO votes softened by Capital (Round 2)',
           quizIndex: 'Normalized average of 4 quiz categories: Capital, Marketing, Strategy, Team',
-          tiebreakers: 'If teams have identical final scores, alphabetical order of team name is used.'
+          autoRating: 'Teams not submitting peer ratings receive 6.5/10 (neutral midpoint)',
+          pNormFallback: 'If no peer ratings exist, P_norm defaults to 0.5 (neutral) instead of 0',
+          tiebreakers: 'Cascading system: Final → Judge → Peer → Approval → Quiz → Alphabetical (last resort)'
         }
       }
     });

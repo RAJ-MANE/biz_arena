@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { ArrowLeft, Trophy, Clock, Users, Target, Award, CheckCircle, AlertTriangle, FileText, Shield, Zap } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -23,6 +25,9 @@ interface User {
 
 export default function RulesPage() {
   const isMobile = useIsMobile();
+  const { resolvedTheme } = useTheme();
+  const currentTheme = resolvedTheme || 'light';
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
   const [user, setUser] = useState<User | null>(null);
   const [isPending, setIsPending] = useState(true);
 
@@ -108,8 +113,8 @@ export default function RulesPage() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-3 mb-6 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                <Image src={logoSrc} alt="E-Summit Logo" width={64} height={64} className="object-contain" />
               </div>
               <div className="text-left">
                 <h1 className="font-bold text-xl bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
@@ -373,7 +378,7 @@ export default function RulesPage() {
                         <strong>Primary Criteria:</strong> Highest Final Score wins
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        <strong>Tiebreaker:</strong> If two or more teams have identical final scores, the winner is determined by <strong>alphabetical order of team name</strong> (Team Alpha beats Team Beta)
+                        <strong>Cascading Tiebreaker:</strong> If teams have identical final scores, compare individual components in order: <strong>Judge → Peer → Approval → Quiz → Alphabetical</strong> (last resort)
                       </p>
                     </div>
                   </div>

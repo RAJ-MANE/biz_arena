@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { RulesDialog } from "@/components/ui/RulesDialog";
-import { UserPlus01, ArrowLeft, Clock, Zap, CheckCircle, AlertCircle, Eye, EyeOff } from "@untitled-ui/icons-react";
+import { UserPlus01, ArrowLeft, Clock, CheckCircle, AlertCircle, Eye, EyeOff } from "@untitled-ui/icons-react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -29,6 +31,9 @@ export default function SignUpPage() {
     deadline?: string;
     message?: string;
   }>({ isOpen: true });
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
 
   // Check registration deadline on component mount
   useEffect(() => {
@@ -109,7 +114,11 @@ export default function SignUpPage() {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
-      setFieldErrors(prev => ({ ...prev, [field]: "" }));
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
     // Clear general error when user makes any change
     if (error) {
@@ -186,7 +195,7 @@ export default function SignUpPage() {
 
   const isFormValid = Object.values(formData).every(value => value.trim()) && 
                      formData.password === formData.confirmPassword &&
-                     Object.keys(fieldErrors).length === 0;
+                     Object.values(fieldErrors).every(err => !err);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 text-foreground overflow-x-hidden">
@@ -209,8 +218,8 @@ export default function SignUpPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                <Image src={logoSrc} alt="E-Summit Logo" width={64} height={64} className="object-contain" />
               </div>
               <div className="text-left">
                 <h1 className="font-bold text-xl bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
