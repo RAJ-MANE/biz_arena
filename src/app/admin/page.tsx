@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { useSession } from "@/lib/auth-client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BackButton } from "@/components/BackButton";
@@ -10,6 +12,10 @@ import { useVotingTimer } from '@/hooks/useVotingTimer';
 import { useRatingTimer } from '@/hooks/useRatingTimer';
 
 export default function AdminPage() {
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
+  
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [rounds, setRounds] = useState<any[]>([]);
@@ -817,19 +823,6 @@ export default function AdminPage() {
     }
   };
 
-  const clearAllCache = async () => {
-    try {
-      const res = await fetch("/api/admin/clear-cache", {
-        method: "POST",
-        credentials: 'include'
-      });
-      if (!res.ok) throw new Error("Failed to clear cache");
-      setSuccess("System cache cleared");
-    } catch (err) {
-      setError("Failed to clear cache");
-    }
-  };
-
   const exportAllData = async () => {
     try {
   const res = await fetch("/api/admin/export", { credentials: 'include' });
@@ -952,9 +945,9 @@ export default function AdminPage() {
                 <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border dark:border-blue-700">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-blue-900 dark:text-blue-300">
-                      {votingPhase === 'pitching' && '🎤 Pitch Presentation'}
-                      {votingPhase === 'preparing' && '⚠️ Preparing / Warning'}
-                      {votingPhase === 'voting' && '⭐ Voting Active'}
+                      {votingPhase === 'pitching' && 'Pitch Presentation'}
+                      {votingPhase === 'preparing' && 'Preparing / Warning'}
+                      {votingPhase === 'voting' && 'Voting Active'}
                     </h4>
                     <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">
                       {votingPhaseTimeLeft}s
@@ -1023,7 +1016,16 @@ export default function AdminPage() {
           <div className="space-y-6">
             {/* Rating Cycle Control */}
             <div className="rounded-lg border border-border dark:border-border/50 bg-card dark:bg-card/50 p-6">
-              <h3 className="font-semibold mb-4">🎯 Real-Time Rating Cycle Control</h3>
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <Image
+                  src={logoSrc}
+                  alt="E-Summit Logo"
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+                Real-Time Rating Cycle Control
+              </h3>
               
               {/* Current Status Display */}
               <div className="grid gap-4 md:grid-cols-3 mb-6">
@@ -1140,7 +1142,7 @@ export default function AdminPage() {
                           disabled={loading}
                           className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-4 py-2 rounded-md font-medium disabled:opacity-50"
                         >
-                          ⭐ End Q&A & Start Rating (5sec warning + 2min rating)
+                          End Q&A & Start Rating (5sec warning + 2min rating)
                         </button>
                       </div>
                     )}
@@ -1149,8 +1151,8 @@ export default function AdminPage() {
                       <div className="space-y-3">
                         <p className="text-sm text-yellow-700 dark:text-yellow-300">
                           {currentPhase === 'rating-warning' 
-                            ? '⚠️ 5-second warning active - Rating will start automatically'
-                            : '⭐ Rating phase active - Judges and peers can now submit scores'
+                            ? '5-second warning active - Rating will start automatically'
+                            : 'Rating phase active - Judges and peers can now submit scores'
                           }
                         </p>
                         <div className="text-xs text-yellow-600 dark:text-yellow-400">
@@ -1203,11 +1205,11 @@ export default function AdminPage() {
                   <div className="text-muted-foreground">Admin controlled</div>
                 </div>
                 <div className={`p-3 rounded-lg ${currentPhase === 'rating-warning' ? 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-700' : 'bg-muted dark:bg-muted/50'}`}>
-                  <div className="font-medium">⚠️ Rating Warning</div>
+                  <div className="font-medium">Rating Warning</div>
                   <div className="text-muted-foreground">5 seconds warning</div>
                 </div>
                 <div className={`p-3 rounded-lg ${currentPhase === 'rating-active' ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-700' : 'bg-muted dark:bg-muted/50'}`}>
-                  <div className="font-medium">⭐ Rating Active</div>
+                  <div className="font-medium">Rating Active</div>
                   <div className="text-muted-foreground">2 minutes scoring</div>
                 </div>
               </div>
@@ -1566,14 +1568,6 @@ export default function AdminPage() {
                     <span>API Status:</span>
                     <span className="text-green-600 dark:text-green-400">🟢 Online</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Cache:</span>
-                    <span className="text-green-600 dark:text-green-400">🟢 Active</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Last Backup:</span>
-                    <span className="text-sm text-muted-foreground">{systemStatus.lastBackup || 'Never'}</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -1593,10 +1587,14 @@ export default function AdminPage() {
                   <div className="flex gap-2">
                     <input
                       type="datetime-local"
-                      value={systemSettings.registration_deadline?.value || ''}
+                      value={systemSettings.registration_deadline?.value ? 
+                        new Date(systemSettings.registration_deadline.value).toISOString().slice(0, 16) : ''}
                       onChange={(e) => {
                         const value = e.target.value;
-                        updateSystemSetting('registration_deadline', value);
+                        if (value) {
+                          const isoString = new Date(value).toISOString();
+                          updateSystemSetting('registration_deadline', isoString);
+                        }
                       }}
                       className="flex-1 rounded-md border px-3 py-2 bg-background dark:bg-background/50"
                     />
@@ -1801,14 +1799,14 @@ export default function AdminPage() {
         <div className="mt-8 border-b border-border dark:border-border/50">
           <nav className="flex space-x-8">
             {[
-              { id: 'rounds', label: 'Rounds', icon: '🎯' },
-              { id: 'voting', label: 'Voting', icon: '🗳️' },
-              { id: 'final', label: 'Final Round', icon: '🏆' },
-              { id: 'teams', label: 'Teams', icon: '👥' },
-              { id: 'users', label: 'Users', icon: '👤' },
-              { id: 'quiz', label: 'Quiz', icon: '❓' },
-              { id: 'analytics', label: 'Analytics', icon: '📊' },
-              { id: 'system', label: 'System', icon: '⚙️' }
+              { id: 'rounds', label: 'Rounds' },
+              { id: 'voting', label: 'Voting' },
+              { id: 'final', label: 'Final Round' },
+              { id: 'teams', label: 'Teams' },
+              { id: 'users', label: 'Users' },
+              { id: 'quiz', label: 'Quiz' },
+              { id: 'analytics', label: 'Analytics' },
+              { id: 'system', label: 'System' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1819,7 +1817,7 @@ export default function AdminPage() {
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
-                {tab.icon} {tab.label}
+                {tab.label}
               </button>
             ))}
           </nav>

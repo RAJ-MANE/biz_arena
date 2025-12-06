@@ -40,8 +40,8 @@ export function DashboardNavbar() {
             <div className="flex items-center gap-3">
               <BackButton />
               <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
-                  <Image src={logoSrc} alt="E-Summit Logo" width={48} height={48} className="object-contain" />
+                <div className="w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden">
+                  <Image src={logoSrc} alt="E-Summit Logo" width={56} height={56} className="object-contain" />
                 </div>
                 <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   BizArena
@@ -120,8 +120,8 @@ export function DashboardNavbar() {
           
           {/* Brand Logo */}
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
-              <Image src={logoSrc} alt="E-Summit Logo" width={56} height={56} className="object-contain" />
+            <div className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+              <Image src={logoSrc} alt="E-Summit Logo" width={72} height={72} className="object-contain" />
             </div>
             <div className="text-left">
               <h1 className="font-bold text-lg bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">

@@ -113,8 +113,8 @@ export default function RulesPage() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-3 mb-6 group">
-              <div className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
-                <Image src={logoSrc} alt="E-Summit Logo" width={64} height={64} className="object-contain" />
+              <div className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                <Image src={logoSrc} alt="E-Summit Logo" width={80} height={80} className="object-contain" />
               </div>
               <div className="text-left">
                 <h1 className="font-bold text-xl bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">

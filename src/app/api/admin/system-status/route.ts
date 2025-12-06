@@ -28,8 +28,6 @@ export async function GET(req: NextRequest) {
     const systemStatus = {
       database: dbStatus,
       api: "Online",
-      cache: "Active",
-      lastBackup: "2024-12-19T10:30:00Z", // Mock data
       uptime: process.uptime(),
       memoryUsage: process.memoryUsage(),
       nodeVersion: process.version,

@@ -408,8 +408,8 @@ export default function ScoreboardPage() {
                         <h3 className="font-bold text-xl mb-2">{team.teamName}</h3>
                         <p className="text-muted-foreground mb-6 text-sm">{team.college}</p>
                         
-                        <div className={`text-4xl font-black mb-4 ${getScoreColor(team.finalCumulativeScore, maxFinalScore)}`}>
-                          {team.finalCumulativeScore.toFixed(1)}
+                        <div className={`text-4xl font-black mb-4 ${getScoreColor(team.finalCumulativeScore || 0, maxFinalScore)}`}>
+                          {(team.finalCumulativeScore || 0).toFixed(1)}
                         </div>
 
                                 <div className="grid grid-cols-2 gap-3 text-sm">
@@ -490,8 +490,8 @@ export default function ScoreboardPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className={`text-2xl font-bold ${getScoreColor(team.finalCumulativeScore, maxFinalScore)}`}>
-                          {team.finalCumulativeScore.toFixed(1)}
+                        <div className={`text-2xl font-bold ${getScoreColor(team.finalCumulativeScore || 0, maxFinalScore)}`}>
+                          {(team.finalCumulativeScore || 0).toFixed(1)}
                         </div>
                         <div className="text-xs text-muted-foreground">Final Score</div>
                       </div>
@@ -519,12 +519,12 @@ export default function ScoreboardPage() {
                           {showDetails && (
                             <div className="flex justify-between">
                               <span>Votes (total):</span>
-                              <span className="font-medium">{team.voting.totalVotes}</span>
+                              <span className="font-medium">{team.voting?.totalVotes ?? 0}</span>
                             </div>
                           )}
                           {showDetails && (
                             <div className="text-xs text-muted-foreground">
-                              Yes: {team.voting.originalYesVotes ?? 0} | No: {team.voting.originalNoVotes ?? 0} | Converted: {team.voting.votesFromTokens ?? 0}
+                              Yes: {team.voting?.originalYesVotes ?? 0} | No: {team.voting?.originalNoVotes ?? 0} | Converted: {team.voting?.votesFromTokens ?? 0}
                             </div>
                           )}
                           <div className="flex justify-between">
@@ -605,10 +605,10 @@ export default function ScoreboardPage() {
                             )}
                           </td>
                           <td className="p-6 text-center">
-                            <div className="font-semibold text-lg">{team.voting.totalVotes ?? 0}</div>
+                            <div className="font-semibold text-lg">{team.voting?.totalVotes ?? 0}</div>
                             {showDetails && (
                               <div className="text-xs text-muted-foreground mt-1">
-                                Yes: {team.voting.originalYesVotes ?? 0} • No: {team.voting.originalNoVotes ?? 0} • Converted: {team.voting.votesFromTokens ?? 0}
+                                Yes: {team.voting?.originalYesVotes ?? 0} • No: {team.voting?.originalNoVotes ?? 0} • Converted: {team.voting?.votesFromTokens ?? 0}
                               </div>
                             )}
                           </td>
@@ -621,8 +621,8 @@ export default function ScoreboardPage() {
                             )}
                           </td>
                           <td className="p-6 text-center">
-                            <div className={`text-2xl font-bold ${getScoreColor(team.finalCumulativeScore, maxFinalScore)}`}>
-                              {team.finalCumulativeScore.toFixed(1)}
+                            <div className={`text-2xl font-bold ${getScoreColor(team.finalCumulativeScore || 0, maxFinalScore)}`}>
+                              {(team.finalCumulativeScore || 0).toFixed(1)}
                             </div>
                           </td>
                         </tr>
@@ -646,16 +646,24 @@ export default function ScoreboardPage() {
                 </div>
                 <div className="space-y-4 text-sm">
                   <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg border border-primary/10">
-                    <span className="font-medium">Quiz Tokens</span>
-                    <span className="text-muted-foreground">Original Quiz Tokens & Remaining Tokens after conversions</span>
+                    <span className="font-medium">Judge Scores (55%)</span>
+                    <span className="text-muted-foreground">Final round evaluations</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg border border-accent/10">
-                    <span className="font-medium">Judge Scores</span>
-                    <span className="text-muted-foreground">Total judge evaluation</span>
+                    <span className="font-medium">Peer Ratings (25%)</span>
+                    <span className="text-muted-foreground">Team peer evaluations</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg border border-primary/10">
-                    <span className="font-medium">Final Score</span>
-                    <span className="text-muted-foreground">Final = Judge total + Peer total + Remaining quiz tokens (votes excluded from score)</span>
+                    <span className="font-medium">Approval Votes (15%)</span>
+                    <span className="text-muted-foreground">Normalized approval rating</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg border border-accent/10">
+                    <span className="font-medium">Quiz Tokens (5%)</span>
+                    <span className="text-muted-foreground">Normalized remaining tokens</span>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg border border-border/50 mt-4">
+                    <span className="font-semibold text-xs">Formula:</span>
+                    <span className="text-xs text-muted-foreground ml-2">Final Score = (0.55 × Judge) + (0.25 × Peer) + (0.15 × Approval) + (0.05 × Quiz)</span>
                   </div>
                 </div>
               </div>
@@ -693,10 +701,7 @@ export default function ScoreboardPage() {
           <div className="text-center space-y-6">
             <div className="p-6 bg-card/30 backdrop-blur-sm border border-border/30 rounded-2xl">
                 <p className="text-muted-foreground mb-2">
-                <span className="font-medium">Ranking Criteria:</span> Final cumulative score (judge total + peer total + remaining token score) • Original votes received (net) as first tiebreaker • Total votes (including converted votes) as final tiebreaker
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Generated at: {new Date(data.metadata.generatedAt).toLocaleString()}
+                <span className="font-medium">Ranking Criteria:</span> Final weighted score (55% Judge + 25% Peer + 15% Approval + 5% Quiz) • 6-level cascading tiebreaker system ensures fair deterministic ranking
               </p>
             </div>
 

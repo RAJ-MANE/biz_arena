@@ -474,6 +474,50 @@ npx drizzle-kit studio
 
  Check `questions` and `options` tables for complete data
 
+## Default Admin & Judge Accounts
+
+### Admin Accounts (5)
+| Username | Password |
+|----------|----------|
+| admin1   | Admin@2026#1 |
+| admin2   | Admin@2026#2 |
+| admin3   | Admin@2026#3 |
+| admin4   | Admin@2026#4 |
+| admin5   | Admin@2026#5 |
+
+**Admin Login**: `/admin/login`
+
+### Judge Accounts (5)
+| Username | Password | Name |
+|----------|----------|------|
+| judge1   | Judge@2026#1 | Judge One |
+| judge2   | Judge@2026#2 | Judge Two |
+| judge3   | Judge@2026#3 | Judge Three |
+| judge4   | Judge@2026#4 | Judge Four |
+| judge5   | Judge@2026#5 | Judge Five |
+
+**Judge Login**: `/judge/login`
+
+### Seeding Accounts
+To populate the database with these accounts:
+```sh
+npx tsx scripts/seed-accounts.ts
+```
+
+**Note**: All passwords follow security requirements (10+ chars, uppercase, lowercase, number, special character)
+
+### Seeding Competition Rounds
+To set up the 3 competition rounds (Quiz, Voting, Final):
+```sh
+npx tsx scripts/seed-rounds.ts
+```
+
+**Schedule**:
+- **Day 1 (Jan 23, 2026)**: QUIZ Round (10:00 AM - 1:00 PM)
+- **Day 2 (Jan 24, 2026)**: VOTING Round (10:00 AM - 12:00 PM), FINAL Round (12:00 PM - 1:00 PM)
+
+All rounds start with status 'PENDING' and can be managed through the Admin Console.
+
 ## Recent Achievements
 - **15 Quiz Questions Added**: Complete BizArena virtual startup simulation quiz dataset
 - **Mobile Responsiveness**: Full mobile and tablet optimization implemented

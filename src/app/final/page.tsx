@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { Timer, Users, Trophy, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import PageLock from "@/components/ui/PageLock";
@@ -46,6 +48,10 @@ interface RatingResponse {
 
 export default function FinalPage() {
   const isMobile = useIsMobile();
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
+  
   // Page lock functionality
   const { isCompleted: isFinalCompleted, loading: roundLoading } = useRoundStatus('FINAL');
   
@@ -477,7 +483,15 @@ export default function FinalPage() {
           {/* Lock Message */}
           <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <div className="text-2xl shrink-0">🔒</div>
+              <div className="shrink-0">
+                <Image
+                  src={logoSrc}
+                  alt="E-Summit Logo"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                />
+              </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Finals Round Locked</h2>
                 <p className="text-sm sm:text-base text-yellow-700 dark:text-yellow-300 mb-4">
@@ -568,11 +582,11 @@ export default function FinalPage() {
             <CardContent className="p-3 sm:p-4 bg-purple-50 dark:bg-purple-950/20">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
                 <h3 className="text-base sm:text-lg font-bold text-purple-900 dark:text-purple-100 leading-tight">
-                  {currentPhase === 'pitching' && '🎤 Team is Pitching (5 min)'}
-                  {currentPhase === 'qna-pause' && '❓ Q&A Session (Admin Controlled)'}
-                  {currentPhase === 'rating-warning' && '⚠️ Rating Starts Soon! (5 sec)'}
-                  {currentPhase === 'rating-active' && '⭐ Rating Active - Judges & Teams (2 min)'}
-                  {currentPhase === 'idle' && '⏸️ Rating Cycle Idle'}
+                  {currentPhase === 'pitching' && 'Team is Pitching (5 min)'}
+                  {currentPhase === 'qna-pause' && 'Q&A Session (Admin Controlled)'}
+                  {currentPhase === 'rating-warning' && 'Rating Starts Soon! (5 sec)'}
+                  {currentPhase === 'rating-active' && 'Rating Active - Judges & Teams (2 min)'}
+                  {currentPhase === 'idle' && 'Rating Cycle Idle'}
                 </h3>
                 <div className="text-2xl sm:text-3xl font-bold text-purple-800 dark:text-purple-200 shrink-0">
                   {currentPhase === 'qna-pause' ? '∞' : 
@@ -679,7 +693,16 @@ export default function FinalPage() {
             {qualifiedTeams.length > 0 && (
               <Card>
                 <CardContent className="p-4 sm:p-6">
-                  <h2 className="text-lg sm:text-xl font-semibold mb-4">🏆 Qualified Teams</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Image
+                      src={logoSrc}
+                      alt="E-Summit Logo"
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
+                    Qualified Teams
+                  </h2>
 
                   {/* Qualification Tiebreaker Note */}
                   {qualificationNote && (
@@ -941,11 +964,24 @@ export default function FinalPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-4 sm:p-6 shadow-xl mx-4">
               <div className="text-center">
-                <div className="text-4xl sm:text-6xl mb-4">
-                  {isQualified ? '🎉' : '👀'}
+                <div className="mb-4 flex justify-center">
+                  <Image
+                    src={logoSrc}
+                    alt="E-Summit Logo"
+                    width={96}
+                    height={96}
+                    className="object-contain"
+                  />
                 </div>
-                <h2 className={`text-xl sm:text-2xl font-bold mb-3 text-green-600 dark:text-green-400`}>
-                  🏆 Finals — All Teams Qualified
+                <h2 className={`text-xl sm:text-2xl font-bold mb-3 text-green-600 dark:text-green-400 flex items-center justify-center gap-2`}>
+                  <Image
+                    src={logoSrc}
+                    alt="E-Summit Logo"
+                    width={28}
+                    height={28}
+                    className="object-contain"
+                  />
+                  Finals — All Teams Qualified
                 </h2>
                 <p className={`text-base sm:text-lg mb-4 text-green-700 dark:text-green-300`}>
                   All teams are qualified for the finals. Please participate and rate other teams during the rating phases.

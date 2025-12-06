@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BackButton } from "@/components/BackButton";
 import { useRatingTimer } from '@/hooks/useRatingTimer';
@@ -31,6 +33,10 @@ interface RatingCycleEvent {
 }
 
 export default function JudgePage() {
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
+  
   const [teams, setTeams] = useState<Team[]>([]);
   const [scores, setScores] = useState<JudgeScore[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
@@ -381,7 +387,16 @@ export default function JudgePage() {
 
         {/* Real-Time Rating Section */}
         <div className="rounded-lg border border-border dark:border-border/50 bg-card dark:bg-card/50 p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">🎯 Real-Time Final Round Rating</h2>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Image
+              src={logoSrc}
+              alt="E-Summit Logo"
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+            Real-Time Final Round Rating
+          </h2>
           
           {/* Current pitch team status */}
           {currentPitchTeam ? (
@@ -467,11 +482,11 @@ export default function JudgePage() {
           {!canRateRealTime && (
             <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-md border border-yellow-200 dark:border-yellow-700">
               <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                {!ratingActive && '⏳ Waiting for rating cycle to start...'}
-                {ratingActive && currentPhase !== 'rating-active' && '⏱️ Wait for judges rating phase...'}
-                {ratingActive && currentPhase === 'rating-active' && phaseTimeLeft <= 0 && '⏰ Judges rating time has ended.'}
-                {!currentPitchTeam && '👥 No team is currently presenting.'}
-                {!judgeName.trim() && currentPitchTeam && '📝 Please enter your judge name.'}
+                {!ratingActive && 'Waiting for rating cycle to start...'}
+                {ratingActive && currentPhase !== 'rating-active' && 'Wait for judges rating phase...'}
+                {ratingActive && currentPhase === 'rating-active' && phaseTimeLeft <= 0 && 'Judges rating time has ended.'}
+                {!currentPitchTeam && 'No team is currently presenting.'}
+                {!judgeName.trim() && currentPitchTeam && 'Please enter your judge name.'}
               </p>
             </div>
           )}

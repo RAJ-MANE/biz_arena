@@ -29,8 +29,8 @@ export default function HomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
-              <Image src={logoSrc} alt="E-Summit Logo" width={40} height={40} className="object-contain" />
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden">
+              <Image src={logoSrc} alt="E-Summit Logo" width={56} height={56} className="object-contain" />
             </div>
             <div>
               <h1 className="font-bold text-lg bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
@@ -435,13 +435,18 @@ export default function HomePage() {
       <footer className="relative border-t border-border/50 bg-gradient-to-b from-card/30 to-card/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="text-center lg:text-left">
-              <p className="text-muted-foreground mb-2">
-                © {new Date().getFullYear()} BizArena
-              </p>
-              <p className="text-sm text-muted-foreground/80">
-                Virtual Startup Simulation • Lab 520, 521
-              </p>
+            <div className="flex flex-col items-center lg:items-start gap-4">
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden">
+                <Image src={logoSrc} alt="E-Summit Logo" width={64} height={64} className="object-contain" />
+              </div>
+              <div className="text-center lg:text-left">
+                <p className="text-muted-foreground mb-2">
+                  © {new Date().getFullYear()} BizArena
+                </p>
+                <p className="text-sm text-muted-foreground/80">
+                  Virtual Startup Simulation • Lab 520, 521
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-6">
               <Link href="/sign-in" className="text-sm font-medium hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-primary/5">

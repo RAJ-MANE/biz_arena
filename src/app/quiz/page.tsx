@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { ArrowLeft, AlertCircle, Clock, Zap, Eye, Maximize2, Minimize2, CheckCircle, XCircle, Timer, Trophy, Brain, Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 import PageLock from "@/components/ui/PageLock";
 import { useRoundStatus } from "@/hooks/useRoundStatus";
@@ -646,6 +648,9 @@ const QuizResults: React.FC<{
 
 export default function QuizPage() {
   const isMobile = useIsMobile();
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
   
   // Page lock functionality
   const { isCompleted: isQuizCompleted, loading: roundLoading } = useRoundStatus('QUIZ');
@@ -1435,7 +1440,15 @@ export default function QuizPage() {
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 to-accent/50 rounded-2xl blur opacity-75"></div>
             <div className="relative bg-card/80 backdrop-blur-xl border border-primary/20 rounded-2xl p-6 lg:p-8 text-center shadow-2xl">
-              <div className={`mb-4 ${isMobile ? 'text-4xl' : 'text-6xl'}`}>🔒</div>
+              <div className={`mb-4 flex justify-center`}>
+                <Image
+                  src={logoSrc}
+                  alt="E-Summit Logo"
+                  width={isMobile ? 64 : 96}
+                  height={isMobile ? 64 : 96}
+                  className="object-contain"
+                />
+              </div>
               <h2 className={`font-black mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent ${
                 isMobile ? 'text-xl' : 'text-2xl'
               }`}>
