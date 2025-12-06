@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 
     const exportData = {
       exportedAt: new Date().toISOString(),
-  platform: "TechSummit 2.0",
+  platform: "BizArena",
       version: "1.0.0",
       data: {
         users: allUsers,
@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(exportData, {
       headers: {
-        'Content-Disposition': `attachment; filename="techsummit-export-${new Date().toISOString().split('T')[0]}.json"`,
+        'Content-Disposition': `attachment; filename="bizarena-export-${new Date().toISOString().split('T')[0]}.json"`,
         'Content-Type': 'application/json'
       }
     });

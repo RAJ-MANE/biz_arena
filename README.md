@@ -1,6 +1,10 @@
-# TechSummit-2.0 Platform
+# BizArena - Virtual Startup Simulation Platform
 
-A modern, business-style hackathon platform built with Next.js, Drizzle ORM, Supabase, and Tailwind CSS. This project supports leader-only teams, custom authentication, admin console, and comprehensive quiz functionality for entrepreneurial skill assessment.
+A modern, interactive startup simulation platform built with Next.js, Drizzle ORM, Supabase, and Tailwind CSS. Step into the founder's seat and run a virtual startup in this fast-paced simulation where you make critical decisions on product, marketing, and funding to outmaneuver competitors and dominate the market.
+
+## Event Details
+**Time:** 10:00 A.M to 1:00 P.M  
+**Location:** Lab 520, 521
 
 ## ✅ **Latest Update: Production Ready with Full Mobile Responsiveness!**
 
@@ -10,7 +14,7 @@ A modern, business-style hackathon platform built with Next.js, Drizzle ORM, Sup
 - **⚡ Real-time WebSocket synchronization** for voting timers between admin and clients
 - **🔐 5 Admin accounts** and **5 Judge accounts** pre-created with secure passwords
 - **🚀 Production deployment ready** for Vercel with optimized configurations
-- **📝 15 comprehensive quiz questions** for Techpreneur Summit 2.0
+- **📝 15 comprehensive quiz questions** for BizArena virtual startup simulation
 - **🎯 Token-based scoring system** with 4 categories: Marketing, Capital, Team, Strategy
 - **🎯 Token-based scoring system** with 4 categories: Marketing, Capital, Team, Strategy
 - **🎲 Starting Tokens**: Each team starts the quiz with 3 tokens in each category (Marketing, Capital, Team, Strategy)
@@ -27,7 +31,7 @@ The platform is currently in an intensive **inhouse testing phase** for 2-3 days
 - ✅ **Bug Detection**: Identifying and documenting any issues for immediate resolution
 - ✅ **Concurrent Access Testing**: Verifying multi-user interactions work without conflicts
 
-**Post-Testing**: Any bugs or issues discovered during this testing phase will be promptly fixed before the final Techpreneur Summit 2.0 event.
+**Post-Testing**: Any bugs or issues discovered during this testing phase will be promptly fixed before the final BizArena event.
 
 ## 🚀 **Production Deployment**
 
@@ -190,8 +194,8 @@ Note: Finals Qualification rule — the top 70% of teams by ranking qualify for 
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/pawanshettyy/techsummit-30-platform.git
-   cd techsummit-30-platform
+   git clone https://github.com/pawanshettyy/BizArena-v1.git
+   cd BizArena-v1
    ```
 2. **Install dependencies:**
 
@@ -366,7 +370,7 @@ npm start
 ## 📁 Project Structure
 
 ```
-techsummit-30-platform/
+BizArena-v1/
 ├── src/
 │   ├── app/                    # Next.js app router pages
 │   │   ├── admin/             # Admin console
@@ -443,7 +447,7 @@ npx drizzle-kit studio
 
 ## 🎉 Recent Achievements
 
-- ✅ **15 Quiz Questions Added**: Complete Techpreneur Summit 2.0 quiz dataset
+- ✅ **15 Quiz Questions Added**: Complete BizArena virtual startup simulation quiz dataset
 - ✅ **Mobile Responsiveness**: Full mobile and tablet optimization implemented
 - ✅ **Token Scoring System**: 4-category entrepreneurial assessment
 - ✅ **Admin Panel Integration**: Full quiz management through web interface

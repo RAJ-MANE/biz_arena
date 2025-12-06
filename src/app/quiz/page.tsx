@@ -1642,7 +1642,7 @@ export default function QuizPage() {
                 <h1 className={`font-black tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent ${
                   isMobile ? 'text-2xl' : 'text-3xl'
                 }`}>
-                  Techpreneur Summit 2.0 Quiz
+                  BizArena Quiz
                 </h1>
                 <p className={`text-muted-foreground mt-2 bg-background/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-border/50 inline-block ${
                   isMobile ? 'text-sm' : ''

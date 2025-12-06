@@ -113,9 +113,9 @@ export default function RulesPage() {
               </div>
               <div className="text-left">
                 <h1 className="font-bold text-xl bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                  TECHPRENEUR
+                  BIZ ARENA
                 </h1>
-                <p className="text-xs text-muted-foreground -mt-1">SUMMIT 2.0</p>
+                <p className="text-xs text-muted-foreground -mt-1">Virtual Startup Challenge</p>
               </div>
             </div>
             <h2 className="text-3xl font-black mb-4 bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent">
@@ -124,9 +124,9 @@ export default function RulesPage() {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur opacity-25"></div>
               <div className="relative text-lg text-muted-foreground max-w-3xl mx-auto p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl">
-                <h3 className="text-xl font-bold mb-2">TECHPRENEUR — SUMMIT 2.0</h3>
+                <h3 className="text-xl font-bold mb-2">BIZ ARENA</h3>
                 <p className="mb-2">
-                  Techpreneur Summit 2.0 is an entrepreneurial strategy game where teams navigate the challenges of building and scaling a startup. Through creativity, strategic decision-making and resource management, teams compete to dominate the marketplace and climb the leaderboard.
+                  BizArena is a virtual startup simulation where you step into the founder's seat. Run a fast-paced startup, make critical decisions on product, marketing, and funding to outmaneuver competitors and dominate the market.
                 </p>
                 <p className="mb-2">
                   Note: Teams earn or lose tokens based on their decisions. Tokens can be redeemed to buy customers in the Token Marketplace phase — customers determine leaderboard position during the Event Day marketplace.

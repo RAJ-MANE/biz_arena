@@ -30,9 +30,9 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="font-bold text-lg bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                TECHPRENEUR
+                BIZ ARENA
               </h1>
-              <p className="text-xs text-muted-foreground -mt-1">SUMMIT 2.0</p>
+              <p className="text-xs text-muted-foreground -mt-1">Virtual Startup Challenge</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -56,7 +56,7 @@ export default function HomePage() {
           {/* Status Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-primary/10 backdrop-blur-sm rounded-full border border-primary/20 hover:border-primary/40 transition-all duration-300 group">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-primary">Registration Open • Axios EDIC</span>
+            <span className="text-sm font-medium text-primary">10:00 A.M - 1:00 P.M • Lab 520, 521</span>
             <div className="w-1 h-1 bg-primary/50 rounded-full group-hover:scale-150 transition-transform"></div>
           </div>
           
@@ -64,17 +64,25 @@ export default function HomePage() {
           <div className="space-y-6 mb-12">
             <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-none">
               <span className="block bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent hover:scale-105 transition-transform duration-500 cursor-default">
-                TECHPRENEUR
-              </span>
-              <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-pulse">
-                SUMMIT 2.0
+                BIZ ARENA
               </span>
             </h1>
             <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Where <span className="text-primary font-semibold">Innovation</span> meets{" "}
-              <span className="text-accent font-semibold">Entrepreneurship</span>{" "}
-              in the ultimate startup challenge
+              Step into the founder's seat. Run a virtual startup in this fast-paced simulation. 
+              Make critical decisions on <span className="text-primary font-semibold">product</span>, 
+              <span className="text-accent font-semibold"> marketing</span>, and{" "}
+              <span className="text-primary font-semibold">funding</span> to outmaneuver competitors and dominate the market.
             </p>
+            <div className="flex items-center justify-center gap-6 text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-primary" />
+                <span className="font-medium">10:00 A.M - 1:00 P.M</span>
+              </div>
+              <div className="w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Lab 520, 521</span>
+              </div>
+            </div>
           </div>
 
           {/* CTA Buttons */}
@@ -109,22 +117,22 @@ export default function HomePage() {
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-primary/20 transition-colors">
                 <Target01 className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Real Problems</h3>
-              <p className="text-muted-foreground text-sm">Solve actual industry challenges</p>
+              <h3 className="font-bold text-lg mb-2">Strategic Decisions</h3>
+              <p className="text-muted-foreground text-sm">Make critical business choices</p>
             </div>
             <div className="group p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl hover:bg-card/80 hover:border-primary/30 transition-all duration-300 hover:-translate-y-2">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-primary/20 transition-colors">
                 <Users01 className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Team Building</h3>
-              <p className="text-muted-foreground text-sm">4-5 members per team</p>
+              <h3 className="font-bold text-lg mb-2">Fast-Paced Simulation</h3>
+              <p className="text-muted-foreground text-sm">Real-time startup challenges</p>
             </div>
             <div className="group p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl hover:bg-card/80 hover:border-primary/30 transition-all duration-300 hover:-translate-y-2">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-primary/20 transition-colors">
                 <Trophy01 className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Grand Prize</h3>
-              <p className="text-muted-foreground text-sm">Win amazing rewards</p>
+              <h3 className="font-bold text-lg mb-2">Market Domination</h3>
+              <p className="text-muted-foreground text-sm">Outmaneuver your competitors</p>
             </div>
           </div>
         </div>
@@ -135,9 +143,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Event Timeline
+              Event Details
             </h2>
-            <p className="text-xl text-muted-foreground">Your journey to entrepreneurial success</p>
+            <p className="text-xl text-muted-foreground">Your journey from founder to market leader</p>
           </div>
 
           {/* Day 1 */}
@@ -425,10 +433,10 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="text-center lg:text-left">
               <p className="text-muted-foreground mb-2">
-                © {new Date().getFullYear()} Techpreneur Summit 2.0
+                © {new Date().getFullYear()} BizArena
               </p>
               <p className="text-sm text-muted-foreground/80">
-                Axios EDIC • Thakur College of Engineering and Technology
+                Virtual Startup Simulation • Lab 520, 521
               </p>
             </div>
             <div className="flex items-center gap-6">

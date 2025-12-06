@@ -176,7 +176,7 @@ export async function GET(req: NextRequest) {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>TechSummit 30 - Production System Logs</title>
+        <title>BizArena - Production System Logs</title>
         <style>
           body { 
             font-family: 'Courier New', monospace; 
@@ -282,7 +282,7 @@ export async function GET(req: NextRequest) {
       </head>
       <body>
         <div class="header">
-          <h1>🔍 TechSummit 30 - Production System Logs</h1>
+          <h1>🔍 BizArena - Production System Logs</h1>
           <p>Real-time system monitoring | Last updated: ${new Date().toISOString()}</p>
           <button class="refresh-btn" onclick="refreshLogs()">🔄 Refresh Logs</button>
           
@@ -329,7 +329,7 @@ export async function GET(req: NextRequest) {
             🔄 Auto-refresh in 30 seconds | 
             📈 Showing last 2 hours of activity
           </p>
-          <p>TechSummit 30 Competition Platform - Real-time monitoring active</p>
+          <p>BizArena Virtual Startup Platform - Real-time monitoring active</p>
         </div>
       </body>
       </html>

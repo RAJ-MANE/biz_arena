@@ -838,7 +838,7 @@ export default function AdminPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `techsummit-data-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `bizarena-data-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       setSuccess("Data exported successfully");
     } catch (err) {

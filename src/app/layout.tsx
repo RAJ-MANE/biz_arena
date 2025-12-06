@@ -8,8 +8,8 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "Techpreneur Summit 2.0",
-  description: "Made with love by EDIC",
+  title: "BizArena - Virtual Startup Challenge",
+  description: "Step into the founder's seat. Run a virtual startup in this fast-paced simulation. Make critical decisions on product, marketing, and funding to dominate the market. 10:00 A.M to 1:00 P.M, Lab 520, 521",
 };
 
 export default function RootLayout({
