@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Check if team already submitted
+    // Check if team already submitted - return existing submission (idempotent)
     const existingSubmission = await db
       .select()
       .from(quizSubmissions)
@@ -61,9 +61,11 @@ export async function POST(req: NextRequest) {
 
     if (existingSubmission.length > 0) {
       return NextResponse.json({ 
-        error: 'Team has already submitted quiz', 
-        code: 'ALREADY_SUBMITTED' 
-      }, { status: 409 });
+        success: true,
+        submission: existingSubmission[0],
+        message: 'Quiz already submitted by this team',
+        isExisting: true
+      }, { status: 200 });
     }
 
 

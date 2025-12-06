@@ -73,8 +73,16 @@ export default function SignUpPage() {
 
     if (!formData.password) {
       errors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length < 10) {
+      errors.password = "Password must be at least 10 characters";
+    } else if (!/[A-Z]/.test(formData.password)) {
+      errors.password = "Password must include at least one uppercase letter";
+    } else if (!/[a-z]/.test(formData.password)) {
+      errors.password = "Password must include at least one lowercase letter";
+    } else if (!/[0-9]/.test(formData.password)) {
+      errors.password = "Password must include at least one number";
+    } else if (!/[^A-Za-z0-9]/.test(formData.password)) {
+      errors.password = "Password must include at least one special character";
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -103,6 +111,10 @@ export default function SignUpPage() {
     if (fieldErrors[field]) {
       setFieldErrors(prev => ({ ...prev, [field]: "" }));
     }
+    // Clear general error when user makes any change
+    if (error) {
+      setError(null);
+    }
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -121,6 +133,8 @@ export default function SignUpPage() {
   const handleRulesAccept = async () => {
     setShowRulesDialog(false);
     setLoading(true);
+    setError(null);
+    setFieldErrors({});
     
     try {
       const res = await fetch("/api/auth/register", {
@@ -138,7 +152,17 @@ export default function SignUpPage() {
       const result = await res.json();
       
       if (!res.ok || !result.success) {
-        setError(result.error || "Registration failed");
+        const errorMsg = result.error || "Registration failed";
+        setError(errorMsg);
+        
+        // Set field-specific errors for better UX
+        if (errorMsg.toLowerCase().includes('username')) {
+          setFieldErrors(prev => ({ ...prev, username: errorMsg }));
+        } else if (errorMsg.toLowerCase().includes('team name')) {
+          setFieldErrors(prev => ({ ...prev, teamName: errorMsg }));
+        } else if (errorMsg.toLowerCase().includes('password')) {
+          setFieldErrors(prev => ({ ...prev, password: errorMsg }));
+        }
         return;
       }
 
@@ -147,7 +171,8 @@ export default function SignUpPage() {
       
     } catch (err: any) {
       console.error('Registration error:', err);
-      setError(err?.message || "Network error. Please try again.");
+      const errorMsg = err?.message || "Network error. Please try again.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
       setPendingSubmit(false);
@@ -364,6 +389,11 @@ export default function SignUpPage() {
                             </Button>
                           </div>
                           {fieldErrors.password && <p className="text-xs text-red-600 dark:text-red-400 mt-2">{fieldErrors.password}</p>}
+                          {!fieldErrors.password && (
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Must be 10+ characters with uppercase, lowercase, number, and special character
+                            </p>
+                          )}
                         </div>
 
                         {/* Confirm Password Field */}
@@ -448,19 +478,21 @@ export default function SignUpPage() {
                     <Button
                       type="submit"
                       disabled={loading || !isFormValid}
-                      className="group relative w-full px-6 py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden mt-6"
+                      className="group relative w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:translate-y-0 overflow-hidden mt-6"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <div className="relative flex items-center justify-center gap-2">
+                      <div className="relative flex items-center justify-center gap-2 text-sm sm:text-base">
                         {loading ? (
                           <>
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Creating Account...
+                            <span className="hidden sm:inline">Creating Account...</span>
+                            <span className="sm:hidden">Creating...</span>
                           </>
                         ) : (
                           <>
                             <UserPlus01 className="w-5 h-5" />
-                            Create Account & Join
+                            <span className="hidden sm:inline">Create Account & Join</span>
+                            <span className="sm:hidden">Create Account</span>
                           </>
                         )}
                       </div>
@@ -480,9 +512,10 @@ export default function SignUpPage() {
                     
                     <Link 
                       href="/sign-in"
-                      className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 font-semibold"
+                      className="group w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 font-semibold text-sm sm:text-base"
                     >
-                      Sign In to Dashboard
+                      <span className="hidden sm:inline">Sign In to Dashboard</span>
+                      <span className="sm:hidden">Sign In</span>
                       <div className="w-5 h-5 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                         <ArrowLeft className="w-3 h-3 text-white rotate-180" />
                       </div>

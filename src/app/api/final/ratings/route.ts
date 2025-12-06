@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    // Check if team already rated this target team
+    // Check if team already rated this target team - return existing rating (idempotent)
     const existingRating = await db
       .select()
       .from(peerRatings)
@@ -106,9 +106,11 @@ export async function POST(request: NextRequest) {
 
     if (existingRating.length > 0) {
       return NextResponse.json({ 
-        error: 'Team has already rated this target team', 
-        code: 'ALREADY_RATED' 
-      }, { status: 409 });
+        success: true,
+        rating: existingRating[0],
+        message: 'Rating already submitted for this team',
+        isExisting: true
+      }, { status: 200 });
     }
 
     const newRating = await db.insert(peerRatings).values({

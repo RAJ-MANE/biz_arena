@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    // Check if this judge already scored this team
+    // Check if this judge already scored this team - return existing score (idempotent)
     const existingScore = await db
       .select()
       .from(judgeScores)
@@ -80,9 +80,11 @@ export async function POST(request: NextRequest) {
 
     if (existingScore.length > 0) {
       return NextResponse.json({ 
-        error: 'This judge has already scored this team', 
-        code: 'ALREADY_SCORED' 
-      }, { status: 409 });
+        success: true,
+        score: existingScore[0],
+        message: `Judge ${judgeName.trim()} has already scored ${team[0]?.name || 'this team'}`,
+        isExisting: true
+      }, { status: 200 });
     }
 
     const newScore = await db.insert(judgeScores).values({

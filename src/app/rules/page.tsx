@@ -237,7 +237,7 @@ export default function RulesPage() {
                     <li>• <strong>Judges score:</strong> 30-100 points (55% weight in final score)</li>
                     <li>• <strong>Peer teams rate:</strong> 3-10 points (25% weight in final score)</li>
                     <li>• All scores normalized to [0,1] before applying weights</li>
-                    <li>⚠️ <strong>Missed Peer Rating:</strong> Automatic 50 points (neutral, with warning)</li>
+                    <li>⚠️ <strong>Missed Peer Rating:</strong> Automatic 6.5/10 rating (neutral midpoint, included in average)</li>
                   </ul>
                 </div>
 
@@ -296,7 +296,7 @@ export default function RulesPage() {
                   <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                     <li><strong>Missed Quiz:</strong> Q_index = 0 (lose 5% of final score + no Round 2 voting advantages)</li>
                     <li><strong>Skipped Vote (Round 2):</strong> Automatic YES vote sent (with warning notification)</li>
-                    <li><strong>Missed Peer Rating (Round 3):</strong> Automatic score of 50 points (neutral, with warning)</li>
+                    <li><strong>Missed Peer Rating (Round 3):</strong> Automatic 6.5/10 rating (neutral midpoint, with warning)</li>
                     <li><strong>Exceeded 3 NO votes:</strong> Further NO attempts auto-convert to YES</li>
                   </ul>
                 </div>

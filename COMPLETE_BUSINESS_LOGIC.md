@@ -57,7 +57,7 @@ ROUND 3 - RATINGS (2-Minute Pitches):
 - Each team presents 2-minute final pitch
 - Judges score: 30-100 points
 - Peer teams rate: 3-10 points
-- Missing peer rating = Automatic 50 points awarded (with warning)
+- Missing peer rating = Automatic 6.5/10 rating (neutral, midpoint)
 - Scores normalized for final calculation
 
 FINAL SCORING WEIGHTS:
@@ -71,7 +71,7 @@ Display Score: Final × 100 (0-100 scale)
 
 WINNER DETERMINATION:
 - Highest final score wins
-- Tiebreaker: Alphabetical order of team name
+- Tiebreaker chain: Judge score > Peer score > Approval > Quiz > Alphabetical
 
 TEAM REGISTRATION RULES:
 ✓ Only team leader can register
@@ -83,7 +83,7 @@ TEAM REGISTRATION RULES:
 PENALTIES & AUTO-HANDLING:
 - Missed Quiz: Q_index = 0 (0% contribution to final score)
 - Missed Voting: Automatic YES votes sent for all teams
-- Missed Peer Rating: Automatic score of 50 points (neutral)
+- Missed Peer Rating: Automatic 6.5/10 rating (neutral midpoint, included in average)
 - All penalties come with warning notifications
 
 TIME LIMITS:
@@ -437,9 +437,9 @@ Authorization: Bearer <team_token>
 
 **Skipped Peer Rating Handling:**
 If a team doesn't rate another team within rating window:
-- **Automatic rating of 50 points awarded**
-- Warning displayed: "You missed rating [Team Name]. An automatic neutral score of 50 has been assigned."
-- Note: 50 is NOT in the normal 3-10 range - it's stored separately as a penalty/neutral score
+- **Automatic rating of 6.5/10 awarded (neutral midpoint)**
+- Warning displayed: "You missed rating [Team Name]. An automatic neutral score of 6.5/10 has been assigned."
+- Note: 6.5 is the exact midpoint of the 3-10 scale and is included in P_avg calculation
 
 ### Score Normalization
 
@@ -457,16 +457,16 @@ J_norm[t] = max(0, min(1, J_norm[t]))
 **Peer Ratings (3-10 → 0-1):**
 ```
 For each team t:
-P_avg[t] = average of all peer ratings for team t
+P_avg[t] = average of ALL peer ratings for team t (including auto 6.5 ratings)
 P_norm[t] = (P_avg[t] - 3) / (10 - 3)
 P_norm[t] = (P_avg[t] - 3) / 7
 
 Clamp to [0,1]:
 P_norm[t] = max(0, min(1, P_norm[t]))
 
-Special case - Missed ratings:
-If team received auto-50 scores, those are treated separately
-and don't affect P_avg calculation (excluded from average)
+Special case - No ratings at all:
+If team received NO peer ratings (no teams rated them),
+P_norm = 0.5 (neutral fallback for fairness)
 ```
 
 ---
@@ -678,9 +678,9 @@ POST /api/rating/auto-complete
 ```
 
 **Impact on Receiving Team:**
-- Auto-50 scores are EXCLUDED from P_avg calculation
-- Only actual 3-10 ratings count toward peer score
-- If team receives NO peer ratings (all auto), P_norm = 0
+- Auto-6.5 ratings are INCLUDED in P_avg calculation (neutral contribution)
+- All ratings (manual 3-10 and auto 6.5) count toward peer score
+- If team receives NO peer ratings at all, P_norm = 0.5 (neutral fallback)
 
 ### 4. Team Uses All 3 NO Votes
 **Scenario:** Team has cast 3 NO votes, attempts to vote NO again
@@ -1086,19 +1086,20 @@ ROUND 3 - RATINGS:
 - Pitch duration: 2 minutes
 - Judge score range: 30-100
 - Peer rating range: 3-10
-- Auto-score for skipped peer rating: 50 (excluded from average)
+- Auto-rating for skipped peer rating: 6.5/10 (neutral midpoint, included in average)
 - Judge weight in final: 55%
 - Peer weight in final: 25%
 
 FINAL SCORING:
 - Total weight: 100% = 55% + 25% + 15% + 5%
 - Display scale: 0-100 points
-- Tiebreaker: Alphabetical team name
+- Tiebreaker: Judge score > Peer score > Approval > Quiz > Alphabetical
 
 PENALTIES:
 - Missed Quiz: Q_index = 0 (lose 5%)
 - Missed Vote: Auto YES (no penalty to voter)
-- Missed Peer Rating: Auto 50 (excluded from average)
+- Missed Peer Rating: Auto 6.5/10 (neutral, included in average)
+- No peer ratings at all: P_norm = 0.5 (neutral fallback for fairness)
 ```
 
 ---

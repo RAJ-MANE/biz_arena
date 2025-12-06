@@ -1665,6 +1665,61 @@ export default function AdminPage() {
                 </Link>
               </div>
             </div>
+
+            {/* Business Logic Reference */}
+            <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <span>📚</span> Current Business Logic - Quick Reference
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-3">
+                  <div className="bg-background/50 rounded-lg p-4">
+                    <h4 className="font-medium mb-2 text-primary">Final Scoring Formula</h4>
+                    <p className="text-sm font-mono bg-muted/50 p-2 rounded">Final = 0.55×J + 0.25×P + 0.15×A + 0.05×Q</p>
+                    <ul className="mt-2 text-xs space-y-1 text-muted-foreground">
+                      <li>• J: Judge scores (55%) - Range 30-100</li>
+                      <li>• P: Peer ratings (25%) - Range 3-10</li>
+                      <li>• A: Approval rate (15%) - Round 2 votes</li>
+                      <li>• Q: Quiz index (5%) - Round 1 performance</li>
+                    </ul>
+                  </div>
+                  <div className="bg-background/50 rounded-lg p-4">
+                    <h4 className="font-medium mb-2 text-accent">Auto-Handling Rules</h4>
+                    <ul className="text-xs space-y-1">
+                      <li>• Missed Quiz: Q_index = 0</li>
+                      <li>• Missed Vote: Auto YES sent</li>
+                      <li>• Missed Peer Rating: Auto 6.5/10 (neutral midpoint)</li>
+                      <li>• 3-NO limit: 4th NO converts to YES</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-background/50 rounded-lg p-4">
+                    <h4 className="font-medium mb-2 text-green-600 dark:text-green-400">Tiebreaker Chain</h4>
+                    <ol className="text-xs space-y-1">
+                      <li>1. Final Score (primary)</li>
+                      <li>2. Judge Score (J_norm)</li>
+                      <li>3. Peer Score (P_norm)</li>
+                      <li>4. Approval Rate (A)</li>
+                      <li>5. Quiz Index (Q_index)</li>
+                      <li>6. Alphabetical (last resort)</li>
+                    </ol>
+                  </div>
+                  <div className="bg-background/50 rounded-lg p-4">
+                    <h4 className="font-medium mb-2 text-blue-600 dark:text-blue-400">Important Notes</h4>
+                    <ul className="text-xs space-y-1">
+                      <li>• No ratings: P_norm = 0.5 (fair fallback)</li>
+                      <li>• Duplicate submissions: Idempotent (return existing)</li>
+                      <li>• Password: 10+ chars with complexity</li>
+                      <li>• All auto-ratings included in calculations</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 text-xs text-muted-foreground text-center">
+                For complete details, see COMPLETE_BUSINESS_LOGIC.md and QUICK_RULES.md
+              </div>
+            </div>
           </div>
         );
 

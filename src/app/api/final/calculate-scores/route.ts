@@ -123,8 +123,33 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Sort by final score descending and assign ranks
-    finalScores.sort((a, b) => parseFloat(b.finalScore) - parseFloat(a.finalScore));
+    // Sort by final score descending with cascading tiebreaker:
+    // 1. Final score (primary)
+    // 2. Judge score (judgeNorm)
+    // 3. Peer score (peerNorm)
+    // 4. Approval rate (approvalRate)
+    // 5. Quiz index (quizIndex)
+    // 6. Alphabetical team name (last resort)
+    finalScores.sort((a, b) => {
+      const scoreDiff = parseFloat(b.finalScore) - parseFloat(a.finalScore);
+      if (Math.abs(scoreDiff) > 0.000001) return scoreDiff;
+      
+      const judgeDiff = parseFloat(b.components.judgeNorm) - parseFloat(a.components.judgeNorm);
+      if (Math.abs(judgeDiff) > 0.000001) return judgeDiff;
+      
+      const peerDiff = parseFloat(b.components.peerNorm) - parseFloat(a.components.peerNorm);
+      if (Math.abs(peerDiff) > 0.000001) return peerDiff;
+      
+      const approvalDiff = parseFloat(b.components.approvalRate) - parseFloat(a.components.approvalRate);
+      if (Math.abs(approvalDiff) > 0.000001) return approvalDiff;
+      
+      const quizDiff = parseFloat(b.components.quizIndex) - parseFloat(a.components.quizIndex);
+      if (Math.abs(quizDiff) > 0.000001) return quizDiff;
+      
+      // Last resort: alphabetical by team name
+      return a.teamName.localeCompare(b.teamName);
+    });
+    
     finalScores.forEach((team, index) => {
       team.rank = index + 1;
     });

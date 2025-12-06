@@ -126,7 +126,10 @@ function SignInPageContent() {
                         type="text"
                         required
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => {
+                          setUsername(e.target.value);
+                          if (error) setError(null);
+                        }}
                         className="w-full px-4 py-3 bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 placeholder:text-muted-foreground"
                         placeholder="Enter your username"
                         disabled={loading}
@@ -145,7 +148,10 @@ function SignInPageContent() {
                         type={showPassword ? "text" : "password"}
                         required
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (error) setError(null);
+                        }}
                         className="w-full px-4 py-3 pr-12 bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 placeholder:text-muted-foreground"
                         placeholder="Enter your password"
                         disabled={loading}
@@ -203,19 +209,21 @@ function SignInPageContent() {
                 <Button
                   type="submit"
                   disabled={loading || !username.trim() || !password}
-                  className="group relative w-full px-6 py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
+                  className="group relative w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:translate-y-0 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center justify-center gap-2">
+                  <div className="relative flex items-center justify-center gap-2 text-sm sm:text-base">
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Signing in...
+                        <span className="hidden sm:inline">Signing in...</span>
+                        <span className="sm:hidden">Signing in...</span>
                       </>
                     ) : (
                       <>
                         <LogIn01 className="w-5 h-5" />
-                        Sign In to Dashboard
+                        <span className="hidden sm:inline">Sign In to Dashboard</span>
+                        <span className="sm:hidden">Sign In</span>
                       </>
                     )}
                   </div>
@@ -235,9 +243,10 @@ function SignInPageContent() {
                 
                 <Link 
                   href="/sign-up"
-                  className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 font-semibold"
+                  className="group w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 font-semibold text-sm sm:text-base"
                 >
-                  Create Your Account
+                  <span className="hidden sm:inline">Create Your Account</span>
+                  <span className="sm:hidden">Create Account</span>
                   <div className="w-5 h-5 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                     <ArrowLeft className="w-3 h-3 text-white rotate-180" />
                   </div>

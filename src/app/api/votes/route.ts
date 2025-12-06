@@ -176,7 +176,8 @@ export async function POST(request: NextRequest) {
           .limit(1);
 
         if (existingVote.length > 0) {
-          throw new Error('ALREADY_VOTED');
+          // Return existing vote (idempotent) - don't throw error
+          return existingVote[0];
         }
 
         // Get or create voter state for 3-NO limit enforcement
@@ -234,6 +235,26 @@ export async function POST(request: NextRequest) {
       });
     } catch (txError: any) {
       if (txError.message === 'ALREADY_VOTED') {
+        // Return existing vote (idempotent behavior)
+        const existingVote = await db
+          .select()
+          .from(votes)
+          .where(and(
+            eq(votes.fromTeamId, fromTeamId),
+            eq(votes.toTeamId, toTeamId)
+          ))
+          .limit(1);
+        
+        if (existingVote.length > 0) {
+          return NextResponse.json({
+            success: true,
+            message: 'Vote already recorded for this team',
+            vote: existingVote[0],
+            isExisting: true
+          }, { status: 200 });
+        }
+        
+        // Fallback to error if we can't find the existing vote
         return NextResponse.json({ 
           error: 'Team has already voted for this target team', 
           code: 'ALREADY_VOTED' 

@@ -70,30 +70,46 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = hashSync(password, 12);
 
-    // Create team first
-    const newTeam = await db.insert(teams).values({
-      name: sanitizedTeamName.trim(),
-      college: sanitizedCollege.trim(),
-      // Ensure teams start with 3 tokens in each category
-      tokensMarketing: 3,
-      tokensCapital: 3,
-      tokensTeam: 3,
-      tokensStrategy: 3,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }).returning();
+    // Use transaction to ensure atomic team and user creation
+    const client = await db.$client;
+    let newTeam, newUser;
+    
+    try {
+      const result = await client.begin(async (tx: any) => {
+        // Create team first
+        const team = await tx.insert(teams).values({
+          name: sanitizedTeamName.trim(),
+          college: sanitizedCollege.trim(),
+          // Ensure teams start with 3 tokens in each category
+          tokensMarketing: 3,
+          tokensCapital: 3,
+          tokensTeam: 3,
+          tokensStrategy: 3,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }).returning();
 
-    // Create user and assign them to the team
-    const newUser = await db.insert(user).values({
-      id: userId,
-      username: sanitizedUsername.trim().toLowerCase(),
-      name: sanitizedName.trim(),
-      password: hashedPassword,
-      isAdmin: false,
-      teamId: newTeam[0].id, // Assign user to the team
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }).returning();
+        // Create user and assign them to the team
+        const userRecord = await tx.insert(user).values({
+          id: userId,
+          username: sanitizedUsername.trim().toLowerCase(),
+          name: sanitizedName.trim(),
+          password: hashedPassword,
+          isAdmin: false,
+          teamId: team[0].id, // Assign user to the team
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }).returning();
+        
+        return { team, userRecord };
+      });
+      
+      newTeam = result.team;
+      newUser = result.userRecord;
+    } catch (txError) {
+      console.error('Transaction error during registration:', txError);
+      throw txError; // Re-throw to be caught by outer catch block
+    }
 
 
     return NextResponse.json({ 
@@ -121,16 +137,35 @@ export async function POST(req: NextRequest) {
     // Handle specific database errors
     if (error && typeof error === 'object' && 'message' in error) {
       const errorMessage = (error as any).message;
-      if (errorMessage.includes('UNIQUE constraint failed')) {
+      
+      // Handle unique constraint violations
+      if (errorMessage.includes('UNIQUE constraint failed') || errorMessage.includes('duplicate key')) {
         if (errorMessage.includes('username')) {
-          return NextResponse.json({ error: 'Username already taken' }, { status: 409 });
+          return NextResponse.json({ 
+            success: false,
+            error: 'Username already taken. Please choose a different username.' 
+          }, { status: 409 });
         }
-        if (errorMessage.includes('name')) {
-          return NextResponse.json({ error: 'Team name already taken' }, { status: 409 });
+        if (errorMessage.includes('name') || errorMessage.includes('team')) {
+          return NextResponse.json({ 
+            success: false,
+            error: 'Team name already taken. Please choose a different team name.' 
+          }, { status: 409 });
         }
+      }
+      
+      // Handle foreign key or validation errors
+      if (errorMessage.includes('constraint') || errorMessage.includes('validation')) {
+        return NextResponse.json({ 
+          success: false,
+          error: 'Invalid data provided. Please check all fields and try again.' 
+        }, { status: 400 });
       }
     }
     
-    return NextResponse.json({ error: 'Registration failed. Please try again.' }, { status: 500 });
+    return NextResponse.json({ 
+      success: false,
+      error: 'Registration failed. Please try again later.' 
+    }, { status: 500 });
   }
 }

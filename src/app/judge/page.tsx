@@ -506,7 +506,7 @@ export default function JudgePage() {
         )}
 
         {/* All Team Scores Overview */}
-        <div className="rounded-lg border bg-card dark:bg-card/50 p-6">
+        <div className="rounded-lg border bg-card dark:bg-card/50 p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Judge Scores Overview</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -545,6 +545,76 @@ export default function JudgePage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Scoring Guidelines */}
+        <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <span>📋</span> Judge Scoring Guidelines
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="bg-background/50 rounded-lg p-4">
+              <h3 className="font-medium mb-3 text-primary">Score Range: 30-100 Points</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 dark:text-green-400 font-bold">90-100:</span>
+                  <span>Exceptional - Outstanding execution, innovation, and presentation</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">75-89:</span>
+                  <span>Strong - Well-developed concept with clear potential</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-yellow-600 dark:text-yellow-400 font-bold">60-74:</span>
+                  <span>Good - Solid idea with room for improvement</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-orange-600 dark:text-orange-400 font-bold">45-59:</span>
+                  <span>Fair - Basic concept, needs significant work</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-600 dark:text-red-400 font-bold">30-44:</span>
+                  <span>Needs Work - Fundamental issues or incomplete</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-background/50 rounded-lg p-4">
+              <h3 className="font-medium mb-3 text-accent">Evaluation Criteria</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <span>•</span>
+                  <span><strong>Innovation:</strong> Uniqueness and creativity of the solution</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>•</span>
+                  <span><strong>Feasibility:</strong> Practicality and implementation potential</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>•</span>
+                  <span><strong>Market Fit:</strong> Problem-solution alignment and target audience</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>•</span>
+                  <span><strong>Presentation:</strong> Clarity, structure, and delivery quality</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>•</span>
+                  <span><strong>Business Model:</strong> Revenue potential and sustainability</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>•</span>
+                  <span><strong>Team Execution:</strong> Preparedness and professionalism</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-700">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Note:</strong> Your scores contribute 55% to the final team ranking. Peer ratings (25%), 
+              approval votes (15%), and quiz performance (5%) make up the remaining 45%. Each judge can score 
+              each team only once. Duplicate submissions will return your existing score.
+            </p>
           </div>
         </div>
 
