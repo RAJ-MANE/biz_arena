@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { votes, rounds, user } from '@/db/schema';
+import { votes, rounds, user, voterState } from '@/db/schema';
 import { eq, and, count } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import { createSafeErrorResponse } from '@/lib/utils';
@@ -158,54 +158,97 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Check if team already voted for this target team
-    const existingVote = await db
-      .select()
-      .from(votes)
-      .where(and(
-        eq(votes.fromTeamId, fromTeamId),
-        eq(votes.toTeamId, toTeamId)
-      ))
-      .limit(1);
+    // Use transaction to prevent race conditions in vote submission
+    const client = await db.$client;
+    let newVote;
+    let actualValue = value; // Track the actual vote value used
+    
+    try {
+      newVote = await client.begin(async (tx: any) => {
+        // Check if team already voted for this target team (with row lock)
+        const existingVote = await tx
+          .select()
+          .from(votes)
+          .where(and(
+            eq(votes.fromTeamId, fromTeamId),
+            eq(votes.toTeamId, toTeamId)
+          ))
+          .limit(1);
 
-    if (existingVote.length > 0) {
-      return NextResponse.json({ 
-        error: 'Team has already voted for this target team', 
-        code: 'ALREADY_VOTED' 
-      }, { status: 409 });
-    }
+        if (existingVote.length > 0) {
+          throw new Error('ALREADY_VOTED');
+        }
 
-    // If downvote, check team downvote limit (max 3)
-    if (value === -1) {
-      const downvoteCount = await db
-        .select({ count: count() })
-        .from(votes)
-        .where(and(
-          eq(votes.fromTeamId, fromTeamId),
-          eq(votes.value, -1)
-        ));
+        // Get or create voter state for 3-NO limit enforcement
+        let voterStateRecord = await tx
+          .select()
+          .from(voterState)
+          .where(eq(voterState.teamId, fromTeamId))
+          .limit(1);
 
-      if (downvoteCount[0]?.count >= 3) {
+        if (voterStateRecord.length === 0) {
+          // Initialize voter state with 3 NO votes remaining
+          const [newState] = await tx.insert(voterState).values({
+            teamId: fromTeamId,
+            noVotesRemaining: 3,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }).returning();
+          voterStateRecord = [newState];
+        }
+
+        const currentNoVotesRemaining = voterStateRecord[0].noVotesRemaining;
+
+        // Implement 3-NO limit logic
+        if (value === -1) {
+          // Attempting to vote NO
+          if (currentNoVotesRemaining > 0) {
+            // Allow NO vote and decrement counter
+            actualValue = -1;
+            await tx
+              .update(voterState)
+              .set({
+                noVotesRemaining: currentNoVotesRemaining - 1,
+                updatedAt: new Date(),
+              })
+              .where(eq(voterState.teamId, fromTeamId));
+          } else {
+            // NO votes exhausted, force to YES
+            actualValue = 1;
+          }
+        } else {
+          // YES vote - no limit, use as-is
+          actualValue = 1;
+        }
+
+        const [vote] = await tx.insert(votes).values([
+          {
+            fromTeamId: fromTeamId,
+            toTeamId: toTeamId,
+            value: actualValue,
+            createdAt: new Date(),
+          }
+        ]).returning();
+
+        return vote;
+      });
+    } catch (txError: any) {
+      if (txError.message === 'ALREADY_VOTED') {
         return NextResponse.json({ 
-          error: 'Team has reached maximum of 3 downvotes', 
-          code: 'DOWNVOTE_LIMIT_EXCEEDED' 
-        }, { status: 400 });
+          error: 'Team has already voted for this target team', 
+          code: 'ALREADY_VOTED' 
+        }, { status: 409 });
       }
+      throw txError;
     }
-
-    const newVote = await db.insert(votes).values([
-      {
-        fromTeamId: fromTeamId,
-        toTeamId: toTeamId,
-        value: value,
-        createdAt: new Date(),
-      }
-    ]).returning();
 
     return NextResponse.json({
       success: true,
-      message: `Vote recorded successfully (${value === 1 ? 'Yes' : 'No'})`,
-      vote: newVote[0]
+      message: actualValue === 1 
+        ? (value === -1 ? 'NO votes exhausted - vote recorded as YES' : 'Vote recorded as YES')
+        : 'Vote recorded as NO',
+      vote: newVote,
+      wasForced: value === -1 && actualValue === 1, // Indicates if NO was forced to YES
     }, { status: 201 });
   } catch (error) {
     console.error('POST votes error:', error);
@@ -236,14 +279,25 @@ export async function GET(request: NextRequest) {
         .where(eq(votes.fromTeamId, parseInt(fromTeamId)))
         .orderBy(votes.createdAt);
 
-  const downvoteCount = teamVotes.filter((v: any) => v.value === -1).length;
-  const votedTeams = teamVotes.map((v: any) => v.toTeamId);
+      // Get voter state to check remaining NO votes
+      const voterStateRecord = await db
+        .select()
+        .from(voterState)
+        .where(eq(voterState.teamId, parseInt(fromTeamId)))
+        .limit(1);
+
+      const noVotesRemaining = voterStateRecord.length > 0 
+        ? voterStateRecord[0].noVotesRemaining 
+        : 3; // Default if not initialized yet
+
+      const downvoteCount = teamVotes.filter((v: any) => v.value === -1).length;
+      const votedTeams = teamVotes.map((v: any) => v.toTeamId);
 
       return NextResponse.json({
         fromTeamId: parseInt(fromTeamId),
         votescast: teamVotes,
         downvoteCount,
-        remainingDownvotes: Math.max(0, 3 - downvoteCount),
+        noVotesRemaining, // Authoritative from voterState table
         votedTeams,
       });
     } else if (teamId) {

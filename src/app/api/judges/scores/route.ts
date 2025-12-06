@@ -20,10 +20,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Validate score is integer
-    if (!Number.isInteger(score)) {
+    // Validate score is integer between 30-100
+    if (!Number.isInteger(score) || score < 30 || score > 100) {
       return NextResponse.json({ 
-        error: 'Score must be an integer', 
+        error: 'Score must be an integer between 30 and 100', 
         code: 'INVALID_SCORE' 
       }, { status: 400 });
     }

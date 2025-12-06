@@ -132,6 +132,12 @@ export const quizSubmissions = pgTable('quiz_submissions', {
   remainingCapital: integer('remaining_capital').notNull().default(0),
   remainingTeam: integer('remaining_team').notNull().default(0),
   remainingStrategy: integer('remaining_strategy').notNull().default(0),
+  // Normalized category scores (0-1) for influence calculations
+  capitalNorm: text('capital_norm'), // Stored as text to preserve precision
+  marketingNorm: text('marketing_norm'),
+  strategyNorm: text('strategy_norm'),
+  teamNorm: text('team_norm'),
+  quizIndex: text('quiz_index'), // Overall quiz influence index (0-1)
   durationSeconds: integer('duration_seconds').notNull(),
   createdAt: timestamp('created_at', { withTimezone: false }).notNull().defaultNow()
 });
@@ -153,6 +159,15 @@ export const votes = pgTable('votes', {
   toTeamId: integer('to_team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
   value: integer('value').notNull(), // +1 or -1
   createdAt: timestamp('created_at', { withTimezone: false }).notNull().defaultNow()
+});
+
+// Voter state tracking for 3-NO limit
+export const voterState = pgTable('voter_state', {
+  id: serial('id').primaryKey(),
+  teamId: integer('team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }).unique(),
+  noVotesRemaining: integer('no_votes_remaining').notNull().default(3),
+  createdAt: timestamp('created_at', { withTimezone: false }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: false }).notNull().defaultNow()
 });
 
 // Token to votes conversions
@@ -231,6 +246,18 @@ export const votingState = pgTable('voting_state', {
   currentPhase: text('current_phase').notNull().default('idle'),
   cycleStartTs: timestamp('cycle_start_ts', { withTimezone: false }),
   phaseStartTs: timestamp('phase_start_ts', { withTimezone: false }),
+  updatedAt: timestamp('updated_at', { withTimezone: false }).notNull().defaultNow()
+});
+
+// Team approval rates from Round 2 (voting)
+export const teamApprovalRates = pgTable('team_approval_rates', {
+  id: serial('id').primaryKey(),
+  teamId: integer('team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }).unique(),
+  yesRaw: integer('yes_raw').notNull().default(0),
+  noRaw: integer('no_raw').notNull().default(0),
+  yesEffective: text('yes_effective').notNull().default('0'), // Stored as text for precision
+  noEffective: text('no_effective').notNull().default('0'),
+  approvalRate: text('approval_rate').notNull().default('0.5'), // A[t] in [0,1]
   updatedAt: timestamp('updated_at', { withTimezone: false }).notNull().defaultNow()
 });
 

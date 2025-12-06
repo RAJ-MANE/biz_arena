@@ -102,40 +102,58 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Create token conversion record
-    const newConversion = await db.insert(tokenConversions).values([
-      {
-        teamId: teamId,
-        category: 'ALL',
-        tokensUsed: quantity * 4, // 4 tokens per conversion (1 from each category)
-        votesGained: quantity,
-        createdAt: new Date(),
-      }
-    ]).returning();
+    // Validate that deduction won't result in negative balances
+    if (available.marketing - quantity < 0 || 
+        available.capital - quantity < 0 || 
+        available.team - quantity < 0 || 
+        available.strategy - quantity < 0) {
+      return NextResponse.json({ 
+        error: 'Insufficient tokens for conversion', 
+        code: 'INSUFFICIENT_TOKENS_VALIDATION',
+        currentTokens: available
+      }, { status: 400 });
+    }
 
-    // Deduct tokens from team's remaining balance
-    const updatedSubmission = await db
-      .update(quizSubmissions)
-      .set({
-        remainingMarketing: Math.max(0, available.marketing - quantity),
-        remainingCapital: Math.max(0, available.capital - quantity),
-        remainingTeam: Math.max(0, available.team - quantity),
-        remainingStrategy: Math.max(0, available.strategy - quantity),
-      })
-      .where(eq(quizSubmissions.teamId, teamId))
-      .returning();
+    // Use transaction to ensure atomicity
+    const client = await db.$client;
+    const result = await client.begin(async (tx: any) => {
+      // Create token conversion record
+      const [newConversion] = await tx.insert(tokenConversions).values([
+        {
+          teamId: teamId,
+          category: 'ALL',
+          tokensUsed: quantity * 4, // 4 tokens per conversion (1 from each category)
+          votesGained: quantity,
+          createdAt: new Date(),
+        }
+      ]).returning();
+
+      // Deduct tokens from team's remaining balance
+      const [updatedSubmission] = await tx
+        .update(quizSubmissions)
+        .set({
+          remainingMarketing: available.marketing - quantity,
+          remainingCapital: available.capital - quantity,
+          remainingTeam: available.team - quantity,
+          remainingStrategy: available.strategy - quantity,
+        })
+        .where(eq(quizSubmissions.teamId, teamId))
+        .returning();
+
+      return { newConversion, updatedSubmission };
+    });
 
     // Calculate new remaining tokens after deduction
     const newRemainingTokens = {
-      marketing: Math.max(0, available.marketing - quantity),
-      capital: Math.max(0, available.capital - quantity),
-      team: Math.max(0, available.team - quantity),
-      strategy: Math.max(0, available.strategy - quantity),
+      marketing: available.marketing - quantity,
+      capital: available.capital - quantity,
+      team: available.team - quantity,
+      strategy: available.strategy - quantity,
     };
 
     return NextResponse.json({
       success: true,
-      conversion: newConversion[0],
+      conversion: result.newConversion,
       tokensUsed: quantity * 4,
       votesGained: quantity,
       tokensBeforeConversion: available,
