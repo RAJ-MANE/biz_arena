@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useSession } from "@/lib/auth-client";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeToggle } from "../../components/ThemeToggle";
 import { BackButton } from "@/components/BackButton";
 // centralized timer removed - use per-round hooks
 import { useVotingTimer } from '@/hooks/useVotingTimer';
@@ -15,7 +15,7 @@ export default function AdminPage() {
   const { theme, systemTheme } = useTheme();
   const currentTheme = theme === 'system' ? systemTheme : theme;
   const logoSrc = currentTheme === 'dark' ? '/esummit-logo-white.png' : '/esummit-logo.png';
-  
+
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [rounds, setRounds] = useState<any[]>([]);
@@ -24,7 +24,7 @@ export default function AdminPage() {
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentPitchTeamId, setCurrentPitchTeamId] = useState<number | null>(null);
   // Per-round timer state comes from hooks (no local state to avoid collisions)
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export default function AdminPage() {
       { text: '', tokenDeltaMarketing: 0, tokenDeltaCapital: 0, tokenDeltaTeam: 0, tokenDeltaStrategy: 0 }
     ]
   });
-  
+
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -88,7 +88,7 @@ export default function AdminPage() {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      
+
       // Helper function to fetch with timeout
       const fetchWithTimeout = async (url: string, timeout = 5000, includeCredentials = false) => {
         const controller = new AbortController();
@@ -284,8 +284,8 @@ export default function AdminPage() {
       setLoading(true);
       // Poll timer hooks first so UI updates quickly without a blocking overlay
       await Promise.allSettled([
-        pollVotingStatus().catch(() => {}),
-        pollRatingStatus().catch(() => {})
+        pollVotingStatus().catch(() => { }),
+        pollRatingStatus().catch(() => { })
       ]);
       await fetchAllData();
     } catch (err) {
@@ -296,10 +296,10 @@ export default function AdminPage() {
   };
 
   // Round management functions
-  const updateRound = async (roundId: number, status: "PENDING"|"ACTIVE"|"COMPLETED") => {
+  const updateRound = async (roundId: number, status: "PENDING" | "ACTIVE" | "COMPLETED") => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const res = await fetch("/api/rounds", {
         method: "PATCH",
@@ -310,9 +310,9 @@ export default function AdminPage() {
         const err = await res.json();
         throw new Error(err?.error || "Failed to update round");
       }
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
-      
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
+
       // Get round name for success message
       const roundName = rounds.find(r => r.id === roundId)?.name || `Round ${roundId}`;
       setSuccess(`Round "${roundName}" status updated to ${status}`);
@@ -448,8 +448,8 @@ export default function AdminPage() {
         body: JSON.stringify({ teamId, status })
       });
       if (!res.ok) throw new Error("Failed to update team");
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess(`Team status updated to ${status}`);
     } catch (err) {
       setError("Failed to update team status");
@@ -466,8 +466,8 @@ export default function AdminPage() {
         body: JSON.stringify({ teamId })
       });
       if (!res.ok) throw new Error("Failed to delete team");
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess("Team deleted successfully");
     } catch (err) {
       setError("Failed to delete team");
@@ -484,8 +484,8 @@ export default function AdminPage() {
         body: JSON.stringify({ userId, isAdmin })
       });
       if (!res.ok) throw new Error("Failed to update user role");
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess(`User role updated to ${isAdmin ? 'Admin' : 'User'}`);
     } catch (err) {
       setError("Failed to update user role");
@@ -502,8 +502,8 @@ export default function AdminPage() {
         body: JSON.stringify(settings)
       });
       if (!res.ok) throw new Error("Failed to update quiz settings");
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess("Quiz settings updated");
     } catch (err) {
       setError("Failed to update quiz settings");
@@ -518,8 +518,8 @@ export default function AdminPage() {
         credentials: 'include'
       });
       if (!res.ok) throw new Error("Failed to reset quizzes");
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess("All quiz progress has been reset");
     } catch (err) {
       setError("Failed to reset quizzes");
@@ -578,7 +578,7 @@ export default function AdminPage() {
   const updateOption = (index: number, field: string, value: any) => {
     setQuestionFormData(prev => ({
       ...prev,
-      options: prev.options.map((option, i) => 
+      options: prev.options.map((option, i) =>
         i === index ? { ...option, [field]: value } : option
       )
     }));
@@ -619,8 +619,8 @@ export default function AdminPage() {
         throw new Error(errorData.error || "Failed to save question");
       }
 
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess(editingQuestion ? "Question updated successfully" : "Question created successfully");
       closeQuestionForm();
     } catch (err: any) {
@@ -638,8 +638,8 @@ export default function AdminPage() {
         body: JSON.stringify({ questionId })
       });
       if (!res.ok) throw new Error("Failed to delete question");
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess("Question deleted successfully");
     } catch (err) {
       setError("Failed to delete question");
@@ -650,7 +650,7 @@ export default function AdminPage() {
   const startRatingCycle = async () => {
     try {
       setLoading(true);
-      
+
       if (!currentPitchTeamId) {
         setError("Please select a team before starting the rating cycle");
         return;
@@ -658,25 +658,25 @@ export default function AdminPage() {
 
       const qualifiedTeams = teams.filter(team => team.qualifiedForFinal);
       const finalTeams = qualifiedTeams.length > 0 ? qualifiedTeams : teams;
-      
+
       // First set the current team
       const selectedTeam = teams.find(t => t.id === currentPitchTeamId);
       if (selectedTeam) {
         await fetch("/api/rating/current", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             teamId: currentPitchTeamId,
             teamName: selectedTeam.name
           })
         });
       }
-      
+
       // Then start the rating cycle
       const res = await fetch("/api/rating/current", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           action: "start",
           cycleType: "final",
           teams: finalTeams.map((t: any) => t.id),
@@ -807,14 +807,14 @@ export default function AdminPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, value })
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || "Failed to update setting");
       }
-      
-  // Refresh data in background so UI remains responsive
-  fetchAllData().catch(console.error);
+
+      // Refresh data in background so UI remains responsive
+      fetchAllData().catch(console.error);
       setSuccess(`Setting '${key}' updated successfully`);
     } catch (err: any) {
       setError(err.message || "Failed to update setting");
@@ -825,7 +825,7 @@ export default function AdminPage() {
 
   const exportAllData = async () => {
     try {
-  const res = await fetch("/api/admin/export", { credentials: 'include' });
+      const res = await fetch("/api/admin/export", { credentials: 'include' });
       if (!res.ok) throw new Error("Failed to export data");
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
@@ -846,21 +846,19 @@ export default function AdminPage() {
         return (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {rounds.map((r) => (
-              <div key={r.id} className={`rounded-lg border p-4 ${
-                r.status === 'COMPLETED' ? 'border-green-300 dark:border-green-700 bg-green-700 dark:bg-green-950 text-white' : 
-                r.status === 'ACTIVE' ? 'border-blue-300 dark:border-blue-700 bg-blue-700 dark:bg-blue-950 text-white' : 
-                'border-border dark:border-border/50 bg-card dark:bg-card/50'
-              }`}>
+              <div key={r.id} className={`rounded-lg border p-4 ${r.status === 'COMPLETED' ? 'border-green-300 dark:border-green-700 bg-green-700 dark:bg-green-950 text-white' :
+                  r.status === 'ACTIVE' ? 'border-blue-300 dark:border-blue-700 bg-blue-700 dark:bg-blue-950 text-white' :
+                    'border-border dark:border-border/50 bg-card dark:bg-card/50'
+                }`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold text-foreground">{r.name}</h3>
                     <p className="text-xs text-muted-foreground">
-                      Day {r.day} • Status: 
-                      <span className={`font-medium ml-1 ${
-                        r.status === 'COMPLETED' ? 'text-green-600 dark:text-green-400' :
-                        r.status === 'ACTIVE' ? 'text-blue-600 dark:text-blue-400' :
-                        'text-muted-foreground'
-                      }`}>
+                      Day {r.day} • Status:
+                      <span className={`font-medium ml-1 ${r.status === 'COMPLETED' ? 'text-green-600 dark:text-green-400' :
+                          r.status === 'ACTIVE' ? 'text-blue-600 dark:text-blue-400' :
+                            'text-muted-foreground'
+                        }`}>
                         {r.status}
                         {r.status === 'COMPLETED' ? ' ✅' : ''}
                       </span>
@@ -873,23 +871,23 @@ export default function AdminPage() {
                   </div>
                 )}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <button 
-                    disabled={loading} 
-                    onClick={() => updateRound(r.id, "PENDING")} 
+                  <button
+                    disabled={loading}
+                    onClick={() => updateRound(r.id, "PENDING")}
                     className="rounded-md border border-border dark:border-border/50 px-3 py-1 text-sm text-foreground hover:bg-accent dark:hover:bg-accent/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Set Pending
                   </button>
-                  <button 
-                    disabled={loading} 
-                    onClick={() => updateRound(r.id, "ACTIVE")} 
+                  <button
+                    disabled={loading}
+                    onClick={() => updateRound(r.id, "ACTIVE")}
                     className="rounded-md border border-border dark:border-border/50 px-3 py-1 text-sm text-foreground hover:bg-accent dark:hover:bg-accent/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Start
                   </button>
-                  <button 
-                    disabled={loading} 
-                    onClick={() => updateRound(r.id, "COMPLETED")} 
+                  <button
+                    disabled={loading}
+                    onClick={() => updateRound(r.id, "COMPLETED")}
                     className="rounded-md border border-border dark:border-border/50 px-3 py-1 text-sm text-foreground hover:bg-accent dark:hover:bg-accent/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Complete
@@ -908,9 +906,9 @@ export default function AdminPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm mb-2">Select Pitching Team</label>
-                  <select 
-                    value={currentPitchTeamId ?? ''} 
-                    onChange={e => setPitchTeam(Number(e.target.value))} 
+                  <select
+                    value={currentPitchTeamId ?? ''}
+                    onChange={e => setPitchTeam(Number(e.target.value))}
                     className="w-full rounded-md border px-3 py-2 bg-background dark:bg-background/50 dark:border-input"
                     disabled={ratingCycleActive}
                   >
@@ -926,7 +924,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     Current: {currentPitchTeamId ? teams.find(t => t.id === currentPitchTeamId)?.name : 'None'}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -954,19 +952,18 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div className="w-full bg-blue-200 dark:bg-blue-900 rounded-full h-3">
-                    <div 
-                      className={`h-3 rounded-full transition-all duration-1000 ${
-                        votingPhase === 'pitching' ? 'bg-green-500 dark:bg-green-600' :
-                        votingPhase === 'preparing' ? 'bg-yellow-500 dark:bg-yellow-600' :
-                        votingPhase === 'voting' ? 'bg-red-500 dark:bg-red-600' :
-                        'bg-green-500 dark:bg-green-600'
-                      }`}
-                      style={{ 
+                    <div
+                      className={`h-3 rounded-full transition-all duration-1000 ${votingPhase === 'pitching' ? 'bg-green-500 dark:bg-green-600' :
+                          votingPhase === 'preparing' ? 'bg-yellow-500 dark:bg-yellow-600' :
+                            votingPhase === 'voting' ? 'bg-red-500 dark:bg-red-600' :
+                              'bg-green-500 dark:bg-green-600'
+                        }`}
+                      style={{
                         width: `${Math.max(0, Math.min(100,
                           votingPhase === 'pitching' ? (votingPhaseTimeLeft / 90) * 100 : // 90 seconds
-                          votingPhase === 'preparing' ? (votingPhaseTimeLeft / 5) * 100 : // 5 seconds
-                          (votingPhaseTimeLeft / 30) * 100 // 30 seconds
-                        ))}%` 
+                            votingPhase === 'preparing' ? (votingPhaseTimeLeft / 5) * 100 : // 5 seconds
+                              (votingPhaseTimeLeft / 30) * 100 // 30 seconds
+                        ))}%`
                       }}
                     ></div>
                   </div>
@@ -998,15 +995,15 @@ export default function AdminPage() {
 
                 {/* Voting is automated via the pitch cycle - manual start/end voting removed */}
 
-                <button 
-                  onClick={completeAllPitches} 
+                <button
+                  onClick={completeAllPitches}
                   className="rounded-md bg-purple-600 dark:bg-purple-700 px-4 py-2 text-white font-bold hover:bg-purple-700 dark:hover:bg-purple-800"
                 >
                   {allPitchesCompleted ? 'Mark Pitches Incomplete' : 'Complete All Pitches'}
                 </button>
               </div>
             </div>
-            
+
             {/* Voting statistics removed - system is automated */}
           </div>
         );
@@ -1026,7 +1023,7 @@ export default function AdminPage() {
                 />
                 Real-Time Rating Cycle Control
               </h3>
-              
+
               {/* Current Status Display */}
               <div className="grid gap-4 md:grid-cols-3 mb-6">
                 <div className="text-center p-4 rounded-lg bg-muted dark:bg-muted/50">
@@ -1065,8 +1062,8 @@ export default function AdminPage() {
               {/* Team Selection */}
               <div className="mb-6">
                 <label className="block text-sm font-medium mb-2">Select Team for Pitch</label>
-                <select 
-                  value={currentPitchTeamId || ''} 
+                <select
+                  value={currentPitchTeamId || ''}
                   onChange={(e) => setCurrentPitchTeamId(e.target.value ? parseInt(e.target.value) : null)}
                   className="w-full rounded-md border border-input bg-background dark:bg-background/50 px-3 py-2"
                   disabled={ratingCycleActive}
@@ -1089,16 +1086,16 @@ export default function AdminPage() {
               <div className="space-y-4 mb-6">
                 {/* Primary Controls */}
                 <div className="grid gap-3 md:grid-cols-2">
-                  <button 
-                    onClick={startRatingCycle} 
-                    disabled={!currentPitchTeamId || ratingCycleActive} 
+                  <button
+                    onClick={startRatingCycle}
+                    disabled={!currentPitchTeamId || ratingCycleActive}
                     className="rounded-md bg-green-600 dark:bg-green-700 px-4 py-2 text-white font-bold disabled:opacity-50 hover:bg-green-700 dark:hover:bg-green-800"
                   >
                     Start Rating Cycle (5min Pitch)
                   </button>
-                  <button 
-                    onClick={stopRatingCycle} 
-                    disabled={!ratingCycleActive} 
+                  <button
+                    onClick={stopRatingCycle}
+                    disabled={!ratingCycleActive}
                     className="rounded-md bg-red-600 dark:bg-red-700 px-4 py-2 text-white font-bold disabled:opacity-50 hover:bg-red-700 dark:hover:bg-red-800"
                   >
                     End Cycle
@@ -1111,18 +1108,18 @@ export default function AdminPage() {
                     <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-3">
                       🎤 Q&A Session Control
                     </h4>
-                    
+
                     {/* Debug info */}
                     <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                       Debug: currentPhase = "{currentPhase}", ratingCycleActive = {ratingCycleActive ? 'true' : 'false'}
                     </div>
-                    
+
                     {currentPhase === 'pitching' && (
                       <div className="space-y-3">
                         <p className="text-sm text-yellow-700 dark:text-yellow-300">
                           🕐 Pitch in progress... Click below when 5 minutes are up or team finishes early.
                         </p>
-                        <button 
+                        <button
                           onClick={startQnaSession}
                           disabled={loading}
                           className="w-full bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-700 dark:hover:bg-yellow-800 text-white px-4 py-2 rounded-md font-medium disabled:opacity-50"
@@ -1131,13 +1128,13 @@ export default function AdminPage() {
                         </button>
                       </div>
                     )}
-                    
+
                     {currentPhase === 'qna-pause' && (
                       <div className="space-y-3">
                         <p className="text-sm text-yellow-700 dark:text-yellow-300">
                           🗣️ Q&A session active - Timer paused for questions between presenter and pitcher.
                         </p>
-                        <button 
+                        <button
                           onClick={startRatingFromQna}
                           disabled={loading}
                           className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-4 py-2 rounded-md font-medium disabled:opacity-50"
@@ -1146,11 +1143,11 @@ export default function AdminPage() {
                         </button>
                       </div>
                     )}
-                    
+
                     {(currentPhase === 'rating-warning' || currentPhase === 'rating-active') && (
                       <div className="space-y-3">
                         <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                          {currentPhase === 'rating-warning' 
+                          {currentPhase === 'rating-warning'
                             ? '5-second warning active - Rating will start automatically'
                             : 'Rating phase active - Judges and peers can now submit scores'
                           }
@@ -1172,22 +1169,21 @@ export default function AdminPage() {
                     <span>{currentPhase} ({phaseTimeLeft > 0 ? Math.ceil(phaseTimeLeft) : 0}s remaining)</span>
                   </div>
                   <div className="w-full bg-muted dark:bg-muted/50 rounded-full h-3">
-                    <div 
-                      className={`h-3 rounded-full transition-all duration-1000 ${
-                        currentPhase === 'pitching' ? 'bg-blue-600 dark:bg-blue-700' :
-                        currentPhase === 'qna-pause' ? 'bg-yellow-600 dark:bg-yellow-700' :
-                        currentPhase === 'rating-warning' ? 'bg-red-600 dark:bg-red-700' :
-                        currentPhase === 'rating-active' ? 'bg-green-600 dark:bg-green-700' :
-                        'bg-gray-400 dark:bg-gray-500'
-                      }`}
-                      style={{ 
+                    <div
+                      className={`h-3 rounded-full transition-all duration-1000 ${currentPhase === 'pitching' ? 'bg-blue-600 dark:bg-blue-700' :
+                          currentPhase === 'qna-pause' ? 'bg-yellow-600 dark:bg-yellow-700' :
+                            currentPhase === 'rating-warning' ? 'bg-red-600 dark:bg-red-700' :
+                              currentPhase === 'rating-active' ? 'bg-green-600 dark:bg-green-700' :
+                                'bg-gray-400 dark:bg-gray-500'
+                        }`}
+                      style={{
                         width: `${Math.max(0, (phaseTimeLeft / (
                           currentPhase === 'pitching' ? 300 : // 5 minutes = 300 seconds
-                          currentPhase === 'qna-pause' ? 100 : // No timer, show full
-                          currentPhase === 'rating-warning' ? 5 : // 5 seconds
-                          currentPhase === 'rating-active' ? 120 : // 2 minutes = 120 seconds
-                          100 // Default
-                        )) * 100)}%` 
+                            currentPhase === 'qna-pause' ? 100 : // No timer, show full
+                              currentPhase === 'rating-warning' ? 5 : // 5 seconds
+                                currentPhase === 'rating-active' ? 120 : // 2 minutes = 120 seconds
+                                  100 // Default
+                        )) * 100)}%`
                       }}
                     ></div>
                   </div>
@@ -1237,13 +1233,13 @@ export default function AdminPage() {
                     <p className="text-sm text-muted-foreground">ID: {team.id} • Members: {team.memberCount || 0}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button 
+                    <button
                       onClick={() => updateTeamStatus(team.id, team.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                       className={`px-3 py-1 rounded-md text-sm ${team.status === 'ACTIVE' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'}`}
                     >
                       {team.status || 'ACTIVE'}
                     </button>
-                    <button 
+                    <button
                       onClick={() => deleteTeam(team.id)}
                       className="px-3 py-1 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-800"
                     >
@@ -1269,11 +1265,10 @@ export default function AdminPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => updateUserRole(user.id, !user.isAdmin)}
-                      className={`px-3 py-1 rounded-md text-sm ${
-                        user.isAdmin 
-                          ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200' 
+                      className={`px-3 py-1 rounded-md text-sm ${user.isAdmin
+                          ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
                           : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'
-                      }`}
+                        }`}
                     >
                       {user.isAdmin ? 'Admin' : 'User'}
                     </button>
@@ -1292,17 +1287,17 @@ export default function AdminPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm mb-2 text-foreground">Time Limit (minutes)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     value={quizSettings.timeLimit || 30}
-                    onChange={e => setQuizSettings({...quizSettings, timeLimit: Number(e.target.value)})}
+                    onChange={e => setQuizSettings({ ...quizSettings, timeLimit: Number(e.target.value) })}
                     className="w-full rounded-md border px-3 py-2 bg-background dark:bg-background/50 text-foreground dark:text-foreground"
                   />
                 </div>
                 <div>
                   <label className="block text-sm mb-2 text-foreground">Total Questions</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     value={questions.length}
                     readOnly
                     className="w-full rounded-md border px-3 py-2 bg-muted dark:bg-muted/50 text-muted-foreground opacity-75"
@@ -1310,13 +1305,13 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button 
+                <button
                   onClick={() => updateQuizSettings(quizSettings)}
                   className="rounded-md bg-blue-600 dark:bg-blue-700 px-4 py-2 text-white hover:bg-blue-700 dark:hover:bg-blue-800"
                 >
                   Update Settings
                 </button>
-                <button 
+                <button
                   onClick={resetAllQuizzes}
                   className="rounded-md bg-red-600 dark:bg-red-700 px-4 py-2 text-white hover:bg-red-700 dark:hover:bg-red-800"
                 >
@@ -1328,7 +1323,7 @@ export default function AdminPage() {
             <div className="rounded-lg border border-border dark:border-border/50 bg-card dark:bg-card/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-foreground">Question Management</h3>
-                <button 
+                <button
                   onClick={() => openQuestionForm()}
                   disabled={questions.length >= 15}
                   className="rounded-md bg-green-600 dark:bg-green-700 px-4 py-2 text-white disabled:opacity-50 hover:bg-green-700 dark:hover:bg-green-800"
@@ -1336,7 +1331,7 @@ export default function AdminPage() {
                   Add Question ({questions.length}/15)
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 {questions.map((question, index) => (
                   <div key={question.id} className="border border-border dark:border-border/50 rounded-lg p-4 bg-background dark:bg-background/50">
@@ -1357,13 +1352,13 @@ export default function AdminPage() {
                         )}
                       </div>
                       <div className="flex gap-2">
-                        <button 
+                        <button
                           onClick={() => openQuestionForm(question)}
                           className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-800"
                         >
                           Edit
                         </button>
-                        <button 
+                        <button
                           onClick={() => deleteQuestion(question.id)}
                           className="px-3 py-1 text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-800"
                         >
@@ -1373,7 +1368,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                 ))}
-                
+
                 {questions.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No questions added yet. Click "Add Question" to get started.
@@ -1403,13 +1398,13 @@ export default function AdminPage() {
                   <h3 className="text-lg font-semibold mb-4 text-foreground">
                     {editingQuestion ? 'Edit Question' : 'Add New Question'}
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm mb-2 text-foreground">Question Text</label>
-                      <textarea 
+                      <textarea
                         value={questionFormData.text}
-                        onChange={e => setQuestionFormData(prev => ({...prev, text: e.target.value}))}
+                        onChange={e => setQuestionFormData(prev => ({ ...prev, text: e.target.value }))}
                         className="w-full rounded-md border px-3 py-2 bg-background dark:bg-background/50 text-foreground"
                         rows={3}
                         placeholder="Enter the quiz question..."
@@ -1418,10 +1413,10 @@ export default function AdminPage() {
 
                     <div>
                       <label className="block text-sm mb-2 text-foreground">Max Tokens Per Question</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         value={questionFormData.maxTokenPerQuestion}
-                        onChange={e => setQuestionFormData(prev => ({...prev, maxTokenPerQuestion: Number(e.target.value)}))}
+                        onChange={e => setQuestionFormData(prev => ({ ...prev, maxTokenPerQuestion: Number(e.target.value) }))}
                         className="w-full rounded-md border px-3 py-2 bg-background dark:bg-background/50 text-foreground"
                         min="1"
                         max="10"
@@ -1431,21 +1426,21 @@ export default function AdminPage() {
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <label className="block text-sm text-foreground">Options</label>
-                        <button 
+                        <button
                           onClick={addOption}
                           className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded hover:bg-green-200 dark:hover:bg-green-800"
                         >
                           Add Option
                         </button>
                       </div>
-                      
+
                       <div className="space-y-3">
                         {questionFormData.options.map((option, index) => (
                           <div key={index} className="border border-border dark:border-border/50 rounded-lg p-3 bg-muted dark:bg-muted/50">
                             <div className="flex justify-between items-center mb-2">
                               <span className="font-medium text-foreground">Option {String.fromCharCode(65 + index)}</span>
                               {questionFormData.options.length > 2 && (
-                                <button 
+                                <button
                                   onClick={() => removeOption(index)}
                                   className="px-2 py-1 text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-800"
                                 >
@@ -1453,11 +1448,11 @@ export default function AdminPage() {
                                 </button>
                               )}
                             </div>
-                            
+
                             <div className="grid gap-3">
                               <div>
                                 <label className="block text-xs mb-1 text-foreground">Option Text</label>
-                                <input 
+                                <input
                                   type="text"
                                   value={option.text}
                                   onChange={e => updateOption(index, 'text', e.target.value)}
@@ -1465,11 +1460,11 @@ export default function AdminPage() {
                                   placeholder="Enter option text..."
                                 />
                               </div>
-                              
+
                               <div className="grid grid-cols-5 gap-2">
                                 <div>
                                   <label className="block text-xs mb-1 text-foreground">Marketing</label>
-                                  <input 
+                                  <input
                                     type="number"
                                     value={option.tokenDeltaMarketing}
                                     onChange={e => updateOption(index, 'tokenDeltaMarketing', Number(e.target.value))}
@@ -1478,7 +1473,7 @@ export default function AdminPage() {
                                 </div>
                                 <div>
                                   <label className="block text-xs mb-1 text-foreground">Capital</label>
-                                  <input 
+                                  <input
                                     type="number"
                                     value={option.tokenDeltaCapital}
                                     onChange={e => updateOption(index, 'tokenDeltaCapital', Number(e.target.value))}
@@ -1487,7 +1482,7 @@ export default function AdminPage() {
                                 </div>
                                 <div>
                                   <label className="block text-xs mb-1 text-foreground">Team</label>
-                                  <input 
+                                  <input
                                     type="number"
                                     value={option.tokenDeltaTeam}
                                     onChange={e => updateOption(index, 'tokenDeltaTeam', Number(e.target.value))}
@@ -1496,7 +1491,7 @@ export default function AdminPage() {
                                 </div>
                                 <div>
                                   <label className="block text-xs mb-1 text-foreground">Strategy</label>
-                                  <input 
+                                  <input
                                     type="number"
                                     value={option.tokenDeltaStrategy}
                                     onChange={e => updateOption(index, 'tokenDeltaStrategy', Number(e.target.value))}
@@ -1512,13 +1507,13 @@ export default function AdminPage() {
                   </div>
 
                   <div className="flex gap-2 mt-6">
-                    <button 
+                    <button
                       onClick={saveQuestion}
                       className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-800"
                     >
                       {editingQuestion ? 'Update Question' : 'Create Question'}
                     </button>
-                    <button 
+                    <button
                       onClick={closeQuestionForm}
                       className="px-4 py-2 bg-muted dark:bg-muted/50 text-foreground rounded-md border border-border dark:border-border/50 hover:bg-accent dark:hover:bg-accent/50"
                     >
@@ -1587,7 +1582,7 @@ export default function AdminPage() {
                   <div className="flex gap-2">
                     <input
                       type="datetime-local"
-                      value={systemSettings.registration_deadline?.value ? 
+                      value={systemSettings.registration_deadline?.value ?
                         new Date(systemSettings.registration_deadline.value).toISOString().slice(0, 16) : ''}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -1606,7 +1601,7 @@ export default function AdminPage() {
                     </button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {systemSettings.registration_deadline?.value 
+                    {systemSettings.registration_deadline?.value
                       ? `Registration closes on ${new Date(systemSettings.registration_deadline.value).toLocaleString()}`
                       : 'Registration is currently open indefinitely'
                     }
@@ -1615,28 +1610,28 @@ export default function AdminPage() {
                 <div className="rounded-lg bg-muted dark:bg-muted/50 p-3">
                   <h4 className="font-medium text-sm">Registration Status</h4>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {systemSettings.registration_deadline?.value 
+                    {systemSettings.registration_deadline?.value
                       ? (new Date() > new Date(systemSettings.registration_deadline.value)
-                          ? '🔴 Registration Closed - Deadline has passed'
-                          : '🟢 Registration Open - Deadline set')
+                        ? '🔴 Registration Closed - Deadline has passed'
+                        : '🟢 Registration Open - Deadline set')
                       : '🟢 Registration Open - No deadline set'
                     }
                   </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="rounded-lg border border-border dark:border-border/50 bg-card dark:bg-card/50 p-6">
               <h3 className="font-semibold mb-4">System Operations</h3>
               <div className="grid gap-4 md:grid-cols-2">
-                <button 
+                <button
                   onClick={exportAllData}
                   className="rounded-md border border-border dark:border-border/50 px-4 py-3 hover:bg-accent dark:hover:bg-accent/50 text-left"
                 >
                   <div className="font-medium">Export All Data</div>
                   <div className="text-sm text-muted-foreground">Download complete data backup</div>
                 </button>
-                <button 
+                <button
                   onClick={refreshAllData}
                   className="rounded-md border border-border dark:border-border/50 px-4 py-3 hover:bg-accent dark:hover:bg-accent/50 text-left"
                 >
@@ -1773,22 +1768,22 @@ export default function AdminPage() {
             <ThemeToggle />
           </div>
         </div>
-        
+
         <h1 className="text-3xl font-bold">Comprehensive Admin Console</h1>
         <p className="mt-1 text-muted-foreground">Complete platform control and monitoring</p>
-        
+
         {error && (
           <div className="mt-4 rounded-md bg-destructive/10 dark:bg-destructive/20 px-4 py-3 text-sm text-destructive border border-destructive/20 dark:border-destructive/30">
             ❌ {error}
           </div>
         )}
-        
+
         {success && (
           <div className="mt-4 rounded-md bg-green-50 dark:bg-green-950 px-4 py-3 text-sm text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700">
             ✅ {success}
           </div>
         )}
-        
+
         {loading && (
           <div className="mt-4 rounded-md bg-blue-50 dark:bg-blue-950 px-4 py-3 text-sm text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
             ⏳ Loading...
@@ -1811,11 +1806,10 @@ export default function AdminPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
