@@ -43,7 +43,7 @@ export function DashboardNavbar() {
                 <div className="w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden">
                   <Image src={logoSrc} alt="E-Summit Logo" width={56} height={56} className="object-contain" />
                 </div>
-                <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <span className="font-bold text-lg event-text-gradient">
                   BizArena
                 </span>
               </Link>
@@ -124,7 +124,7 @@ export function DashboardNavbar() {
               <Image src={logoSrc} alt="E-Summit Logo" width={72} height={72} className="object-contain" />
             </div>
             <div className="text-left">
-              <h1 className="font-bold text-lg bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              <h1 className="font-bold text-lg event-text-gradient">
                 BIZ ARENA
               </h1>
               <p className="text-xs text-muted-foreground -mt-1">Virtual Startup Challenge</p>

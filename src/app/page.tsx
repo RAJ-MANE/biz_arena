@@ -157,7 +157,7 @@ export default function HomePage() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full border border-primary/20 backdrop-blur-sm">
                 <Calendar className="w-5 h-5 text-primary" />
-                <span className="font-bold text-lg text-primary">DAY 1 - JANUARY 23, 2026</span>
+                <span className="font-bold text-lg text-primary">DAY 1 - FEBRUARY 2, 2026</span>
               </div>
             </div>
             
@@ -225,7 +225,7 @@ export default function HomePage() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full border border-accent/20 backdrop-blur-sm">
                 <Calendar className="w-5 h-5 text-accent" />
-                <span className="font-bold text-lg text-accent">DAY 2 - JANUARY 24, 2026</span>
+                <span className="font-bold text-lg text-accent">DAY 2 - FEBRUARY 3, 2026</span>
               </div>
             </div>
             

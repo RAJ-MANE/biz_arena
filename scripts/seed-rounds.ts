@@ -4,9 +4,9 @@ import { rounds } from '../src/db/schema';
 async function seedRounds() {
   console.log('🌱 Seeding competition rounds...');
 
-  // Event dates: January 23-24, 2026
-  const day1 = new Date('2026-01-23T10:00:00'); // Day 1: January 23, 2026
-  const day2 = new Date('2026-01-24T10:00:00'); // Day 2: January 24, 2026
+  // Event dates: February 2-3, 2026
+  const day1 = new Date('2026-02-02T10:00:00'); // Day 1: February 2, 2026
+  const day2 = new Date('2026-02-03T10:00:00'); // Day 2: February 3, 2026
 
   const roundsData = [
     {
@@ -35,7 +35,7 @@ async function seedRounds() {
   try {
     // Check if rounds already exist
     const existingRounds = await db.select().from(rounds);
-    
+
     if (existingRounds.length > 0) {
       console.log('⚠ Rounds already exist. Skipping seed...');
       console.log(`Found ${existingRounds.length} existing rounds:`);
@@ -56,7 +56,7 @@ async function seedRounds() {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
-      
+
       console.log(`✓ Created round: ${round.name} (Day ${round.day})`);
       console.log(`  Start: ${round.startsAt.toLocaleString()}`);
       console.log(`  End: ${round.endsAt.toLocaleString()}`);
@@ -64,9 +64,9 @@ async function seedRounds() {
 
     console.log('\n✅ All rounds seeded successfully!');
     console.log('\n📅 Competition Schedule:');
-    console.log('Day 1 (Jan 23, 2026): QUIZ (10:00 AM - 1:00 PM)');
-    console.log('Day 2 (Jan 24, 2026): VOTING (10:00 AM - 12:00 PM), FINAL (12:00 PM - 1:00 PM)');
-    
+    console.log('Day 1 (Feb 2, 2026): QUIZ (10:00 AM - 1:00 PM)');
+    console.log('Day 2 (Feb 3, 2026): VOTING (10:00 AM - 12:00 PM), FINAL (12:00 PM - 1:00 PM)');
+
   } catch (error) {
     console.error('❌ Error seeding rounds:', error);
     throw error;

@@ -3,7 +3,7 @@
 A modern, interactive startup simulation platform built with Next.js, Drizzle ORM, Supabase, and Tailwind CSS. Step into the founder's seat and run a virtual startup in this fast-paced **3-round competition** where teams compete through Quiz, Voting, and Finals rounds with a comprehensive weighted scoring system.
 
 ## Event Details
-**Dates:** January 23rd & 24th, 2026  
+**Dates:** February 2nd & 3rd, 2026  
 **Time:** 10:00 A.M to 1:00 P.M  
 **Location:** Lab 520, 521
 
@@ -513,8 +513,8 @@ npx tsx scripts/seed-rounds.ts
 ```
 
 **Schedule**:
-- **Day 1 (Jan 23, 2026)**: QUIZ Round (10:00 AM - 1:00 PM)
-- **Day 2 (Jan 24, 2026)**: VOTING Round (10:00 AM - 12:00 PM), FINAL Round (12:00 PM - 1:00 PM)
+- **Day 1 (Feb 2, 2026)**: QUIZ Round (10:00 AM - 1:00 PM)
+- **Day 2 (Feb 3, 2026)**: VOTING Round (10:00 AM - 12:00 PM), FINAL Round (12:00 PM - 1:00 PM)
 
 All rounds start with status 'PENDING' and can be managed through the Admin Console.
 
