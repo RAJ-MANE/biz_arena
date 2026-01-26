@@ -1,9 +1,5 @@
-import { withSentryConfig } from "@sentry/nextjs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { withSentryConfig } = require("@sentry/nextjs");
+const path = require("path");
 
 // Custom loader for visual edits
 const LOADER = path.resolve(__dirname, "src/visual-edits/component-tagger-loader.js");
@@ -106,7 +102,7 @@ const nextConfig = {
     },
 };
 
-export default withSentryConfig(nextConfig, {
+module.exports = withSentryConfig(nextConfig, {
     // For all available options, see:
     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
