@@ -73,23 +73,11 @@ const nextConfig = {
                     { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
 
                     // Content Security Policy
-                    {
-                        key: "Content-Security-Policy",
-                        value: [
-                            "default-src 'self'",
-                            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://vitals.vercel-analytics.com https://slelguoygbfzlpylpxfs.supabase.co https://va.vercel-scripts.com",
-                            "style-src 'self' 'unsafe-inline'",
-                            "img-src 'self' data: https:",
-                            "font-src 'self' data:",
-                            "connect-src 'self' https://vercel.live wss://vercel.live https://vitals.vercel-analytics.com https://*.supabase.co https://va.vercel-scripts.com https://*.sentry.io https://*.ingest.de.sentry.io",
-                            "media-src 'self'",
-                            "object-src 'none'",
-                            "base-uri 'self'",
-                            "form-action 'self'",
-                            "frame-ancestors 'none'",
-                            "upgrade-insecure-requests"
-                        ].join("; ")
-                    },
+                    // Content Security Policy - REMOVED per user request
+                    // {
+                    //     key: "Content-Security-Policy",
+                    //     value: "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';"
+                    // },
 
                     // Permissions Policy (Feature Policy)
                     {
