@@ -81,7 +81,7 @@ const nextConfig = {
                             "style-src 'self' 'unsafe-inline'",
                             "img-src 'self' data: https:",
                             "font-src 'self' data:",
-                            "connect-src 'self' https://vercel.live wss://vercel.live https://vitals.vercel-analytics.com https://slelguoygbfzlpylpxfs.supabase.co https://va.vercel-scripts.com",
+                            "connect-src 'self' https://vercel.live wss://vercel.live https://vitals.vercel-analytics.com https://slelguoygbfzlpylpxfs.supabase.co https://va.vercel-scripts.com https://*.sentry.io https://*.ingest.de.sentry.io",
                             "media-src 'self'",
                             "object-src 'none'",
                             "base-uri 'self'",
