@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
   try {
     // Get client IP for rate limiting
     const clientIP = req.headers.get('x-forwarded-for') ||
-                     req.headers.get('x-real-ip') ||
-                     'unknown';
+      req.headers.get('x-real-ip') ||
+      'unknown';
 
     // Rate limit: 3 admin login attempts per 15 minutes per IP (stricter for admin)
     const rateLimit = checkRateLimit(`admin_login_${clientIP}`, 3, 15 * 60 * 1000);
@@ -32,49 +32,53 @@ export async function POST(req: NextRequest) {
     }
 
     const { username, password } = await req.json();
-  
-  console.log('Admin login attempt for username:', username);
-  
-  // Find admin by username
-  const admin = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
-  
-  if (!admin.length) {
-    console.log('No admin found for username:', username);
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-  
-  const valid = await bcrypt.compare(password, admin[0].password);
-  
-  if (!valid) {
-    console.log('Password mismatch for username:', username);
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-  // Set admin session with JWT
-  const JWT_SECRET = process.env.JWT_SECRET;
-  if (!JWT_SECRET) {
-    return NextResponse.json({ error: "Server misconfiguration: JWT_SECRET missing" }, { status: 500 });
-  }
 
-  // Use admin id for JWT payload
-  const adminId = admin[0].id;
-  const token = jwt.sign({ userId: adminId, isAdmin: true }, JWT_SECRET, { expiresIn: "24h" });
+    console.log('Admin login attempt for username:', username);
 
-  // Set cookie using NextResponse
-  const response = NextResponse.json({ success: true }, { status: 200 });
-  response.cookies.set("auth-token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24, // 24 hours
-    path: "/"
-  });
-  return response;
-  } catch (error) {
+    // Find admin by username
+    const admin = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
+
+    if (!admin.length) {
+      console.log('No admin found for username:', username);
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const valid = await bcrypt.compare(password, admin[0].password);
+
+    if (!valid) {
+      console.log('Password mismatch for username:', username);
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+    // Set admin session with JWT
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      return NextResponse.json({ error: "Server misconfiguration: JWT_SECRET missing" }, { status: 500 });
+    }
+
+    // Use admin id for JWT payload
+    const adminId = admin[0].id;
+    const token = jwt.sign({ userId: adminId, isAdmin: true }, JWT_SECRET, { expiresIn: "24h" });
+
+    // Set cookie using NextResponse
+    const response = NextResponse.json({ success: true }, { status: 200 });
+    response.cookies.set("auth-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: "/"
+    });
+    return response;
+  } catch (error: any) {
     console.error('Admin login error:', error);
-    const safeError = createSafeErrorResponse(error, 'Login failed');
-    return NextResponse.json({ 
-      error: safeError.error,
-      details: safeError.details
-    }, { status: safeError.statusCode });
+    // DEBUG: Expose full error in production to identify the issue
+    return NextResponse.json({
+      error: error.message || "Unknown error",
+      details: error.stack,
+      envCheck: {
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        hasDbUrl: !!process.env.DATABASE_URL
+      }
+    }, { status: 500 });
   }
 }
