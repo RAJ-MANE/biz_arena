@@ -77,7 +77,12 @@ export async function POST(req: NextRequest) {
       details: error.stack,
       envCheck: {
         hasJwtSecret: !!process.env.JWT_SECRET,
-        hasDbUrl: !!process.env.DATABASE_URL
+        hasDbUrl: !!process.env.DATABASE_URL,
+        dbUrlLength: process.env.DATABASE_URL?.length,
+        dbUrlStartsWithQuote: process.env.DATABASE_URL?.startsWith('"'),
+        dbUrlEndsWithSpace: process.env.DATABASE_URL?.endsWith(' '),
+        // Show first 10 and last 10 chars to verify format without leaking full password
+        preview: process.env.DATABASE_URL ? `${process.env.DATABASE_URL.substring(0, 15)}...${process.env.DATABASE_URL.substring(process.env.DATABASE_URL.length - 10)}` : null
       }
     }, { status: 500 });
   }
