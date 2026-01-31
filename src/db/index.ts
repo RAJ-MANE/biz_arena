@@ -6,7 +6,7 @@ if (!process.env.DATABASE_URL) {
   throw new Error('Missing required env var DATABASE_URL');
 }
 
-const connectionString = process.env.DATABASE_URL || "postgresql://postgres:Rajmane%402006@db.jpokhmcngycrjnjkpzfl.supabase.co:5432/postgres";
+const connectionString = process.env.DATABASE_URL;
 
 // Reuse client across lambda invocations to avoid connection storms in serverless
 declare global {
