@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { rounds } from '@/db/schema';
+
+// Dynamically import the DB at runtime so the admin API remains usable even when DATABASE_URL
+// is not configured (useful for local dev without a DB). If DB is unavailable, handlers can
+// return safe defaults instead of crashing the whole app.
+let _db: any = null;
+let _roundsSchema: any = null;
+async function getDbAndSchema() {
+  if (_db && _roundsSchema) return { db: _db, rounds: _roundsSchema };
+  try {
+    const dbModule = await import('@/db');
+    const schemaModule = await import('@/db/schema');
+    _db = dbModule.db;
+    _roundsSchema = schemaModule.rounds;
+    return { db: _db, rounds: _roundsSchema };
+  } catch (err) {
+    console.warn('DB not available for rounds API:', err?.message || err);
+    return { db: null, rounds: null };
+  }
+}
+
 import { eq } from 'drizzle-orm';
 import { requireAdmin, authenticateRequest } from '@/lib/auth-middleware';
 
@@ -17,6 +35,38 @@ function checkAdminAuth(req: NextRequest): boolean {
 // GET handler - List all rounds (public endpoint)
 export async function GET(request: NextRequest) {
   try {
+    const { db, rounds } = await getDbAndSchema();
+
+    // If DB is not available, return a sensible in-memory default so the admin UI is functional
+    if (!db || !rounds) {
+      const now = new Date();
+      const defaultRounds = [
+        { id: 1, name: 'QUIZ', day: 1, status: 'PENDING', startsAt: null, endsAt: null, createdAt: now, updatedAt: now },
+        { id: 2, name: 'VOTING', day: 2, status: 'PENDING', startsAt: null, endsAt: null, createdAt: now, updatedAt: now },
+        { id: 3, name: 'FINAL', day: 2, status: 'PENDING', startsAt: null, endsAt: null, createdAt: now, updatedAt: now },
+      ];
+
+      const enrichedRounds = defaultRounds.map((round: any) => {
+        const now2 = new Date();
+        const isActive = round.status === 'ACTIVE';
+        const isPending = round.status === 'PENDING';
+        const isCompleted = round.status === 'COMPLETED';
+
+        return {
+          ...round,
+          isActive,
+          isPending,
+          isCompleted,
+          canStart: false,
+          canEnd: false,
+          timeUntilStart: null,
+          timeUntilEnd: null,
+        };
+      });
+
+      return NextResponse.json(enrichedRounds);
+    }
+
     let allRounds = await db
       .select()
       .from(rounds)
