@@ -17,10 +17,27 @@ function checkAdminAuth(req: NextRequest): boolean {
 // GET handler - List all rounds (public endpoint)
 export async function GET(request: NextRequest) {
   try {
-    const allRounds = await db
+    let allRounds = await db
       .select()
       .from(rounds)
       .orderBy(rounds.day, rounds.id);
+
+    // If no rounds exist in the DB, create safe defaults so the admin UI has Start/Stop controls available
+    if (allRounds.length === 0) {
+      console.log('No rounds found - inserting default QUIZ, VOTING, FINAL rounds');
+      const now = new Date();
+      await db.insert(rounds).values([
+        { name: 'QUIZ', day: 1, status: 'PENDING', createdAt: now, updatedAt: now },
+        { name: 'VOTING', day: 2, status: 'PENDING', createdAt: now, updatedAt: now },
+        { name: 'FINAL', day: 2, status: 'PENDING', createdAt: now, updatedAt: now },
+      ]);
+
+      // Re-fetch after insertion
+      allRounds = await db
+        .select()
+        .from(rounds)
+        .orderBy(rounds.day, rounds.id);
+    }
 
   // Add computed fields
   const enrichedRounds = allRounds.map((round: any) => {
